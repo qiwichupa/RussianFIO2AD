@@ -5,8 +5,8 @@ import PySide2.QtWidgets as QtWidgets
 
 import logging
 import os
-import pyperclip
-#import pyad
+from pyad import pyad
+import pyad.adquery
 import random
 import regex
 import string
@@ -17,7 +17,7 @@ import utilities
 from ui_files import pyMain
 
 
-__appname__ = "QT-FIO2AD"
+__appname__ = "RussianFIO2AD"
 __version__ = "0.0.1"
 
 
@@ -56,7 +56,7 @@ logging.basicConfig(handlers=[logging.FileHandler(logfile, 'a', 'utf-8-sig')],
                     format="%(asctime)-15s\t%(name)-10s\t%(levelname)-8s\t%(module)-10s\t%(funcName)-35s\t%(lineno)-6d\t%(message)s",
                     level=logging.DEBUG)
 logger = logging.getLogger(name="main-gui")
-sys.stdout = utilities.LoggerWriter(logger.warning)
+#sys.stdout = utilities.LoggerWriter(logger.warning)
 sys.stderr = utilities.LoggerWriter(logger.warning)
 try:
     removedLogFileSize
@@ -76,6 +76,68 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         self.pasteFIO.clicked.connect(self.pasteFIOClicked)
         self.genLogins.clicked.connect(self.genLoginsClicked)
         self.copyLogins.clicked.connect(self.copySelectedToClipboard)
+
+        self.pasteF.clicked.connect(self.createADAccounts)
+
+        adOUs = self.get_ad_tree()
+        list = self.tree_widget_list(adOUs)
+        self.adTree.insertTopLevelItems(0, list)
+
+
+    def createADAccounts(self):
+        item = self.adTree.selectedItems()
+        if item:
+            baseNode = item[0]
+            getChildNode = baseNode.text(0)
+            print(getChildNode)
+
+
+    def get_ad_tree(self):
+        query = pyad.adquery.ADQuery()
+
+        query.execute_query(
+            attributes=["distinguishedName", "description"],
+            where_clause="objectClass = 'organizationalUnit'"
+            )
+        ous = []
+        for row in query.get_results():
+            path = row["distinguishedName"].replace(",OU=", "\\").replace("OU=","")
+            path = path.split("\\")
+            path = reversed(path)
+            path = "\\".join(path)
+            ous += [path]
+        return ous
+
+    def tree_widget_list(self, show_list):
+        """
+        Creates a list for updating tree widget
+        :param show_list:
+        :return:
+        """
+        items = []
+        for item in show_list:
+            item_parts = item.split('\\')
+
+            entry = QtWidgets.QTreeWidgetItem(None, [item_parts[0]])
+            items_text = [i.text(0) for i in items]
+            if entry.text(0) not in items_text:
+                parent_item = entry
+            else:
+                parent_index = items_text.index(entry.text(0))
+                parent_item = items[parent_index]
+
+            if len(item_parts) > 1:
+                for i in item_parts[1:]:
+                    child_item = QtWidgets.QTreeWidgetItem(None, [i])
+                    child_list_text = [parent_item.child(i).text(0) for i in range(parent_item.childCount())]
+                    if child_item.text(0) in child_list_text:
+                        child_index = child_list_text.index(child_item.text(0))
+                        parent_item = parent_item.child(child_index)
+                    else:
+                        parent_item.addChild(child_item)
+                        parent_item = child_item
+            items.append(entry) if entry.text(0) not in items_text else None
+        return items
 
     def pasteFIOClicked(self):
         """Fills FIO table from clipboard"""
