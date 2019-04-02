@@ -62,10 +62,10 @@ except:
     pass
 
 
-class Main(QtWidgets.QMainWindow, pyMain.Ui_Dialog):
+class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
     def __init__(self, parent=None):
-        QtWidgets.QMainWindow.__init__(self)
+        QtWidgets.QDialog.__init__(self)
         self.setupUi(self)
 
         self.clip = QtGui.QClipboard()
@@ -73,6 +73,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_Dialog):
         self.pasteFIO.clicked.connect(self.pasteFIOClicked)
 
     def pasteFIOClicked(self):
+        """Fills FIO table from clipboard"""
         clipboard = self.clip.text().splitlines()
         self.namesTable.setRowCount(0)
 
@@ -85,16 +86,14 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_Dialog):
                 row = self.namesTable.rowCount()
                 self.namesTable.insertRow(row)
 
-                numItem = QtWidgets.QTableWidgetItem()
-                numItem.setData(QtCore.Qt.EditRole, row + 1)
-                self.namesTable.setItem(row, 0, numItem)
                 for n in range(1, len(fioSplitted)+1):
                     t = fioSplitted[n-1].strip()
-                    self.namesTable.setItem(row, n, QtWidgets.QTableWidgetItem(t))
+                    self.namesTable.setItem(row, n-1, QtWidgets.QTableWidgetItem(t))
 
 
 
     def split_fio(self, fio):
+        """Returns splitted FIO if string can be splitted"""
         result = fio.strip().split("\t", maxsplit=3)
         if len(result) > 1:
             return result

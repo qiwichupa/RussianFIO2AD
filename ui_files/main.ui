@@ -6,144 +6,122 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>945</width>
-    <height>456</height>
+    <width>1023</width>
+    <height>553</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QWidget" name="myWidget" native="true">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>921</width>
-     <height>411</height>
-    </rect>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>16777215</width>
-     <height>16777215</height>
-    </size>
-   </property>
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="3">
-     <widget class="QPushButton" name="pasteO">
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QPushButton" name="pasteFIO">
+     <property name="text">
+      <string>Paste All</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QPushButton" name="pasteF">
+     <property name="text">
+      <string>P.F</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QPushButton" name="pasteI">
+     <property name="text">
+      <string>P.I</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QPushButton" name="pasteO">
+     <property name="text">
+      <string>P.O</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QLineEdit" name="loginPrefix"/>
+   </item>
+   <item row="0" column="5">
+    <widget class="QLineEdit" name="passwordMask"/>
+   </item>
+   <item row="0" column="6">
+    <widget class="QLineEdit" name="domainServer"/>
+   </item>
+   <item row="1" column="0" colspan="4">
+    <widget class="QTableWidget" name="namesTable">
+     <property name="horizontalScrollMode">
+      <enum>QAbstractItemView::ScrollPerPixel</enum>
+     </property>
+     <attribute name="horizontalHeaderStretchLastSection">
+      <bool>true</bool>
+     </attribute>
+     <attribute name="verticalHeaderStretchLastSection">
+      <bool>false</bool>
+     </attribute>
+     <column>
       <property name="text">
-       <string>P.O</string>
+       <string>F</string>
       </property>
-     </widget>
-    </item>
-    <item row="1" column="6">
-     <widget class="QTreeWidget" name="adTree">
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="4">
-     <widget class="QTableWidget" name="namesTable">
-      <column>
-       <property name="text">
-        <string>#</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>F</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>I</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>O</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="6">
-     <widget class="QLabel" name="label">
+     </column>
+     <column>
       <property name="text">
-       <string>TextLabel</string>
+       <string>I</string>
       </property>
-     </widget>
-    </item>
-    <item row="1" column="4" colspan="2">
-     <widget class="QTableWidget" name="loginsTable">
-      <column>
-       <property name="text">
-        <string>#</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>DisplayName</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Login</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Pass</string>
-       </property>
-      </column>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QPushButton" name="pasteI">
+     </column>
+     <column>
       <property name="text">
-       <string>P.I</string>
+       <string>O</string>
       </property>
-     </widget>
-    </item>
-    <item row="0" column="5">
-     <widget class="QLineEdit" name="passwordMask"/>
-    </item>
-    <item row="0" column="4">
-     <widget class="QLineEdit" name="loginPrefix"/>
-    </item>
-    <item row="0" column="0">
-     <widget class="QPushButton" name="pasteFIO">
+     </column>
+    </widget>
+   </item>
+   <item row="1" column="4" colspan="2">
+    <widget class="QTableWidget" name="loginsTable">
+     <column>
       <property name="text">
-       <string>Paste All</string>
+       <string>DisplayName</string>
       </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QPushButton" name="pasteF">
+     </column>
+     <column>
       <property name="text">
-       <string>P.F</string>
+       <string>Login</string>
       </property>
-     </widget>
-    </item>
-    <item row="0" column="6">
-     <widget class="QLineEdit" name="domainServer"/>
-    </item>
-   </layout>
-  </widget>
-  <zorder>myWidget</zorder>
-  <zorder>label</zorder>
-  <zorder>domainServer</zorder>
-  <zorder>pasteI</zorder>
-  <zorder>loginPrefix</zorder>
-  <zorder>passwordMask</zorder>
-  <zorder>adTree</zorder>
-  <zorder>namesTable</zorder>
-  <zorder>pasteFIO</zorder>
-  <zorder>pasteF</zorder>
-  <zorder>loginsTable</zorder>
-  <zorder>pasteO</zorder>
+     </column>
+     <column>
+      <property name="text">
+       <string>Pass</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="1" column="6">
+    <widget class="QTreeWidget" name="adTree">
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="2" column="4" colspan="2">
+    <widget class="QPushButton" name="genLogins">
+     <property name="text">
+      <string>Generate Logins</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="6">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
