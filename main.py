@@ -95,6 +95,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                     self.namesTable.setItem(row, n-1, QtWidgets.QTableWidgetItem(t))
 
     def genLoginsClicked(self):
+        self.loginsTable.setRowCount(0)
         for fioRow in range(0, self.namesTable.rowCount()):
             row = self.loginsTable.rowCount()
             self.loginsTable.insertRow(row)
@@ -108,7 +109,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                         + str(random.randint(0, 9))
                         )
 
-            login = utilities.translit(f) + "_" + utilities.translit(i)[0] + utilities.translit(o)[0]
+            login = self.loginPrefix.text() + utilities.translit(f) + "_" + utilities.translit(i)[0] + utilities.translit(o)[0]
 
             self.loginsTable.setItem(row, 0, QtWidgets.QTableWidgetItem(fio))
             self.loginsTable.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
