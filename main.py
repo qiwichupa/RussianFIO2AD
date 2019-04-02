@@ -71,6 +71,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         self.clip = QtGui.QClipboard()
 
         self.pasteFIO.clicked.connect(self.pasteFIOClicked)
+        self.genLogins.clicked.connect(self.genLoginsClicked)
 
     def pasteFIOClicked(self):
         """Fills FIO table from clipboard"""
@@ -89,6 +90,21 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                 for n in range(1, len(fioSplitted)+1):
                     t = fioSplitted[n-1].strip()
                     self.namesTable.setItem(row, n-1, QtWidgets.QTableWidgetItem(t))
+
+    def genLoginsClicked(self):
+        for fioRow in range(0, self.namesTable.rowCount()):
+            row = self.loginsTable.rowCount()
+            self.loginsTable.insertRow(row)
+
+            f = self.namesTable.item(fioRow, 0).text()
+            i = self.namesTable.item(fioRow, 1).text()
+            o = self.namesTable.item(fioRow, 2).text()
+            fio = "{} {} {}".format(f,i,o)
+
+            login = utilities.translit(f) + "_" + utilities.translit(i)[0] + utilities.translit(o)[0]
+
+            self.loginsTable.setItem(row, 0, QtWidgets.QTableWidgetItem(fio))
+            self.loginsTable.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
 
 
 
