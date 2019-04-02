@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'main.ui',
 # licensing of 'main.ui' applies.
 #
-# Created: Tue Apr  2 10:59:21 2019
+# Created: Tue Apr  2 11:41:43 2019
 #      by: pyside2-uic  running on PySide2 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -66,12 +66,15 @@ class Ui_Dialog(object):
         self.adTree.setObjectName("adTree")
         self.adTree.headerItem().setText(0, "1")
         self.gridLayout.addWidget(self.adTree, 1, 6, 1, 1)
-        self.genLogins = QtWidgets.QPushButton(Dialog)
-        self.genLogins.setObjectName("genLogins")
-        self.gridLayout.addWidget(self.genLogins, 2, 4, 1, 2)
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 3, 0, 1, 6)
+        self.genLogins = QtWidgets.QPushButton(Dialog)
+        self.genLogins.setObjectName("genLogins")
+        self.gridLayout.addWidget(self.genLogins, 2, 4, 1, 1)
+        self.copyLogins = QtWidgets.QPushButton(Dialog)
+        self.copyLogins.setObjectName("copyLogins")
+        self.gridLayout.addWidget(self.copyLogins, 2, 5, 1, 1)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -88,6 +91,7 @@ class Ui_Dialog(object):
         self.loginsTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Dialog", "DisplayName", None, -1))
         self.loginsTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "Login", None, -1))
         self.loginsTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "Pass", None, -1))
-        self.genLogins.setText(QtWidgets.QApplication.translate("Dialog", "Generate Logins", None, -1))
         self.label.setText(QtWidgets.QApplication.translate("Dialog", "TextLabel", None, -1))
+        self.genLogins.setText(QtWidgets.QApplication.translate("Dialog", "Generate Logins", None, -1))
+        self.copyLogins.setText(QtWidgets.QApplication.translate("Dialog", "Copy Logins", None, -1))
 

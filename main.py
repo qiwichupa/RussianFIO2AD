@@ -7,6 +7,8 @@ import logging
 import os
 import pyperclip
 #import pyad
+import random
+import string
 import sys
 
 import utilities
@@ -72,6 +74,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
         self.pasteFIO.clicked.connect(self.pasteFIOClicked)
         self.genLogins.clicked.connect(self.genLoginsClicked)
+        self.copyLogins.clicked.connect(self.copySelectedToClipboard)
 
     def pasteFIOClicked(self):
         """Fills FIO table from clipboard"""
@@ -100,11 +103,16 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             i = self.namesTable.item(fioRow, 1).text()
             o = self.namesTable.item(fioRow, 2).text()
             fio = "{} {} {}".format(f,i,o)
+            password = (random.choice(string.ascii_uppercase) + random.choice(string.ascii_lowercase) + str(random.randint(0,9))
+                        + str(random.randint(0, 9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9))
+                        + str(random.randint(0, 9))
+                        )
 
             login = utilities.translit(f) + "_" + utilities.translit(i)[0] + utilities.translit(o)[0]
 
             self.loginsTable.setItem(row, 0, QtWidgets.QTableWidgetItem(fio))
             self.loginsTable.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
+            self.loginsTable.setItem(row, 2, QtWidgets.QTableWidgetItem(password))
 
 
 
@@ -120,6 +128,18 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             return result
 
         raise Exception
+
+    def copySelectedToClipboard(self):
+        """Sends selected rows to clipboard as tab-separated text"""
+        rows = utilities.get_selected_rows_from_qtablewidget(self.loginsTable)
+        strings = []
+        for row in rows:
+            textRow = []
+            for item in row:
+                textRow += [item.text()]
+            strings += ["\t".join(textRow)]
+        result = "\n".join(strings)
+        self.clip.setText(result)
 
 
 def unhandled_exception(exc_type, exc_value, exc_traceback):
