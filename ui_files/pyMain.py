@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'main.ui',
 # licensing of 'main.ui' applies.
 #
-# Created: Tue Apr  2 12:24:16 2019
+# Created: Tue Apr  2 16:59:04 2019
 #      by: pyside2-uic  running on PySide2 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -46,6 +46,7 @@ class Ui_Dialog(object):
         self.gridLayout_3.addWidget(self.pasteO, 0, 3, 1, 1)
         self.namesTable = QtWidgets.QTableWidget(self.frame_2)
         self.namesTable.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.namesTable.setWordWrap(False)
         self.namesTable.setObjectName("namesTable")
         self.namesTable.setColumnCount(3)
         self.namesTable.setRowCount(0)
@@ -85,14 +86,15 @@ class Ui_Dialog(object):
         self.gridLayout_2.addWidget(self.genLogins, 2, 1, 1, 1)
         self.copyLogins = QtWidgets.QPushButton(self.frame)
         self.copyLogins.setObjectName("copyLogins")
-        self.gridLayout_2.addWidget(self.copyLogins, 2, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.copyLogins, 2, 3, 1, 1)
         self.loginPrefix = QtWidgets.QLineEdit(self.frame)
         self.loginPrefix.setObjectName("loginPrefix")
         self.gridLayout_2.addWidget(self.loginPrefix, 0, 1, 1, 1)
         self.passwordMask = QtWidgets.QLineEdit(self.frame)
         self.passwordMask.setObjectName("passwordMask")
-        self.gridLayout_2.addWidget(self.passwordMask, 0, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.passwordMask, 0, 3, 1, 1)
         self.loginsTable = QtWidgets.QTableWidget(self.frame)
+        self.loginsTable.setWordWrap(False)
         self.loginsTable.setObjectName("loginsTable")
         self.loginsTable.setColumnCount(3)
         self.loginsTable.setRowCount(0)
@@ -106,7 +108,10 @@ class Ui_Dialog(object):
         self.loginsTable.horizontalHeader().setStretchLastSection(True)
         self.loginsTable.verticalHeader().setDefaultSectionSize(16)
         self.loginsTable.verticalHeader().setMinimumSectionSize(16)
-        self.gridLayout_2.addWidget(self.loginsTable, 1, 1, 1, 2)
+        self.gridLayout_2.addWidget(self.loginsTable, 1, 1, 1, 3)
+        self.loginTemplate = QtWidgets.QLineEdit(self.frame)
+        self.loginTemplate.setObjectName("loginTemplate")
+        self.gridLayout_2.addWidget(self.loginTemplate, 0, 2, 1, 1)
         self.gridLogins.addWidget(self.frame, 0, 1, 1, 1)
         self.gridLayoutWidget_3 = QtWidgets.QWidget(self.splitter)
         self.gridLayoutWidget_3.setObjectName("gridLayoutWidget_3")
@@ -147,4 +152,5 @@ class Ui_Dialog(object):
         self.loginsTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Dialog", "DisplayName", None, -1))
         self.loginsTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "Login", None, -1))
         self.loginsTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "Pass", None, -1))
+        self.loginTemplate.setText(QtWidgets.QApplication.translate("Dialog", "f_i1o1", None, -1))
 

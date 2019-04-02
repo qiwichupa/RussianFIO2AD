@@ -8,6 +8,7 @@ import os
 import pyperclip
 #import pyad
 import random
+import regex
 import string
 import sys
 
@@ -109,7 +110,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                         + str(random.randint(0, 9))
                         )
 
-            login = self.loginPrefix.text() + utilities.translit(f) + "_" + utilities.translit(i)[0] + utilities.translit(o)[0]
+            login = self.login_templating(f,i,o)
 
             self.loginsTable.setItem(row, 0, QtWidgets.QTableWidgetItem(fio))
             self.loginsTable.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
@@ -129,6 +130,20 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             return result
 
         raise Exception
+
+    def login_templating(self, f,i,o):
+        fLat = utilities.translit(f)
+        iLat = utilities.translit(i)
+        oLat = utilities.translit(o)
+        template = self.loginTemplate.text()
+
+        template = regex.subf(r'([fio])(\d*)', '{{{1}:.{2}}}', template)
+        template = template.replace(":.}", "}")
+
+        login = self.loginPrefix.text() + template.format(f=fLat, i=iLat, o=oLat)
+
+        return login
+
 
     def copySelectedToClipboard(self):
         """Sends selected rows to clipboard as tab-separated text"""
