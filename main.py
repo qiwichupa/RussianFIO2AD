@@ -5,7 +5,8 @@ import PySide2.QtWidgets as QtWidgets
 
 import logging
 import os
-import pyad
+import pyperclip
+#import pyad
 import sys
 
 import utilities
@@ -13,8 +14,9 @@ import utilities
 from ui_files import pyMain
 
 
-__appname__ = "pyADAccountCreator"
+__appname__ = "QT-FIO2AD"
 __version__ = "0.0.1"
+
 
 # get path of program dir.
 # sys._MEIPASS - variable of pyinstaller (one-dir package) with path to executable
@@ -65,6 +67,45 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_Dialog):
     def __init__(self, parent=None):
         QtWidgets.QMainWindow.__init__(self)
         self.setupUi(self)
+
+        self.clip = QtGui.QClipboard()
+
+        self.pasteFIO.clicked.connect(self.pasteFIOClicked)
+
+    def pasteFIOClicked(self):
+        clipboard = self.clip.text().splitlines()
+        self.namesTable.setRowCount(0)
+
+        for fio in clipboard:
+            try:
+                fioSplitted = self.split_fio(fio)
+            except:
+                pass
+            else:
+                row = self.namesTable.rowCount()
+                self.namesTable.insertRow(row)
+
+                numItem = QtWidgets.QTableWidgetItem()
+                numItem.setData(QtCore.Qt.EditRole, row + 1)
+                self.namesTable.setItem(row, 0, numItem)
+                for n in range(1, len(fioSplitted)+1):
+                    t = fioSplitted[n-1].strip()
+                    self.namesTable.setItem(row, n, QtWidgets.QTableWidgetItem(t))
+
+
+
+    def split_fio(self, fio):
+        result = fio.strip().split("\t", maxsplit=3)
+        if len(result) > 1:
+            return result
+
+
+        result = fio.strip().split(" ", maxsplit=3)
+        if len(result) > 1:
+            return result
+
+        raise Exception
+
 
 def unhandled_exception(exc_type, exc_value, exc_traceback):
     logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))

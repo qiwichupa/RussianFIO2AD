@@ -7,77 +7,143 @@
     <x>0</x>
     <y>0</y>
     <width>945</width>
-    <height>458</height>
+    <height>456</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QTextEdit" name="namesText">
+  <widget class="QWidget" name="myWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>50</y>
-     <width>281</width>
-     <height>391</height>
+     <x>0</x>
+     <y>0</y>
+     <width>921</width>
+     <height>411</height>
     </rect>
    </property>
-  </widget>
-  <widget class="QTableWidget" name="namesTable">
-   <property name="geometry">
-    <rect>
-     <x>310</x>
-     <y>50</y>
-     <width>256</width>
-     <height>391</height>
-    </rect>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>16777215</height>
+    </size>
    </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="3">
+     <widget class="QPushButton" name="pasteO">
+      <property name="text">
+       <string>P.O</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="6">
+     <widget class="QTreeWidget" name="adTree">
+      <column>
+       <property name="text">
+        <string notr="true">1</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="4">
+     <widget class="QTableWidget" name="namesTable">
+      <column>
+       <property name="text">
+        <string>#</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>F</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>I</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>O</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="6">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="4" colspan="2">
+     <widget class="QTableWidget" name="loginsTable">
+      <column>
+       <property name="text">
+        <string>#</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>DisplayName</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Login</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Pass</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="pasteI">
+      <property name="text">
+       <string>P.I</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="5">
+     <widget class="QLineEdit" name="passwordMask"/>
+    </item>
+    <item row="0" column="4">
+     <widget class="QLineEdit" name="loginPrefix"/>
+    </item>
+    <item row="0" column="0">
+     <widget class="QPushButton" name="pasteFIO">
+      <property name="text">
+       <string>Paste All</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="pasteF">
+      <property name="text">
+       <string>P.F</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="6">
+     <widget class="QLineEdit" name="domainServer"/>
+    </item>
+   </layout>
   </widget>
-  <widget class="QLineEdit" name="loginPrefix">
-   <property name="geometry">
-    <rect>
-     <x>320</x>
-     <y>20</y>
-     <width>113</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QTreeWidget" name="adTree">
-   <property name="geometry">
-    <rect>
-     <x>590</x>
-     <y>60</y>
-     <width>256</width>
-     <height>381</height>
-    </rect>
-   </property>
-   <column>
-    <property name="text">
-     <string notr="true">1</string>
-    </property>
-   </column>
-  </widget>
-  <widget class="QLineEdit" name="domainServer">
-   <property name="geometry">
-    <rect>
-     <x>590</x>
-     <y>30</y>
-     <width>113</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="passwordMask">
-   <property name="geometry">
-    <rect>
-     <x>450</x>
-     <y>20</y>
-     <width>113</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
+  <zorder>myWidget</zorder>
+  <zorder>label</zorder>
+  <zorder>domainServer</zorder>
+  <zorder>pasteI</zorder>
+  <zorder>loginPrefix</zorder>
+  <zorder>passwordMask</zorder>
+  <zorder>adTree</zorder>
+  <zorder>namesTable</zorder>
+  <zorder>pasteFIO</zorder>
+  <zorder>pasteF</zorder>
+  <zorder>loginsTable</zorder>
+  <zorder>pasteO</zorder>
  </widget>
  <resources/>
  <connections/>
