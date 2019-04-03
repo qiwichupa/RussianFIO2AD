@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'main.ui',
 # licensing of 'main.ui' applies.
 #
-# Created: Wed Apr  3 15:04:57 2019
+# Created: Wed Apr  3 15:20:21 2019
 #      by: pyside2-uic  running on PySide2 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -158,12 +158,12 @@ class Ui_Dialog(object):
         self.loginsTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Dialog", "DisplayName", None, -1))
         self.loginsTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "Login", None, -1))
         self.loginsTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "Password", None, -1))
-        self.genLogins.setText(QtWidgets.QApplication.translate("Dialog", "Generate Logins", None, -1))
-        self.copyLogins.setText(QtWidgets.QApplication.translate("Dialog", "Copy Logins", None, -1))
+        self.genLogins.setText(QtWidgets.QApplication.translate("Dialog", "Генерировать", None, -1))
+        self.copyLogins.setText(QtWidgets.QApplication.translate("Dialog", "Скопировать всё", None, -1))
         self.loginPrefix.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "Префикс логина", None, -1))
         self.passwordMask.setToolTip(QtWidgets.QApplication.translate("Dialog", "<html><head/><body><p>! - БОЛЬШАЯ БУКВА<br/>@ - маленькая буква<br/># - цифра<br/>$ - знак пунктуации<br/><br/>Например:<br/>!@###$### - Rd834)214</p></body></html>", None, -1))
         self.passwordMask.setText(QtWidgets.QApplication.translate("Dialog", "!@######", None, -1))
         self.loginTemplate.setToolTip(QtWidgets.QApplication.translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">f</span> - фамилия<br/><span style=\" font-weight:600;\">i</span> - имя<br/><span style=\" font-weight:600;\">o</span> - отчество<br/><br/>Используйте цифры, например:<br/><span style=\" font-weight:600;\">i2</span> - две первых буквы имени (транслитерированного)<br/><br/><span style=\" font-weight:600;\">f_i1o1</span> - Ivanov_II</p></body></html>", None, -1))
         self.loginTemplate.setText(QtWidgets.QApplication.translate("Dialog", "f_i1o1", None, -1))
-        self.createAccounts.setText(QtWidgets.QApplication.translate("Dialog", "Create Accounts in:", None, -1))
+        self.createAccounts.setText(QtWidgets.QApplication.translate("Dialog", "Создать аккаунты в:", None, -1))
 

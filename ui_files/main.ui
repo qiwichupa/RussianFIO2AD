@@ -205,14 +205,14 @@
           <item row="2" column="1">
            <widget class="QPushButton" name="genLogins">
             <property name="text">
-             <string>Generate Logins</string>
+             <string>Генерировать</string>
             </property>
            </widget>
           </item>
           <item row="2" column="3">
            <widget class="QPushButton" name="copyLogins">
             <property name="text">
-             <string>Copy Logins</string>
+             <string>Скопировать всё</string>
             </property>
            </widget>
           </item>
@@ -289,7 +289,7 @@
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Create Accounts in:</string>
+             <string>Создать аккаунты в:</string>
             </property>
            </widget>
           </item>

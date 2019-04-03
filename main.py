@@ -235,7 +235,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             fio = "{} {} {}".format(f,i,o)
             password = self.password_templating()
 
-            login = self.login_templating(f,i,o)
+            login = self.login_templating(f,i,o)[:24]
 
             self.loginsTable.setItem(row, 0, QtWidgets.QTableWidgetItem(fio))
             self.loginsTable.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
@@ -290,6 +290,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
     def copySelectedToClipboard(self):
         """Sends selected rows to clipboard as tab-separated text"""
+        self.loginsTable.selectAll()
         rows = utilities.get_selected_rows_from_qtablewidget(self.loginsTable)
         strings = []
         for row in rows:
