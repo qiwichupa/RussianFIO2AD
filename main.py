@@ -84,10 +84,14 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
         self.createAccounts.clicked.connect(self.createADAccounts)
 
-        #adOUs = self.get_ad_tree()
-        adOUs = ["asd\\asdqw", "wqe\\qweqe", "asd\\123ew", "asd\\123ew\\234"]
-        list = self.tree_widget_list(adOUs)
-        self.adTree.insertTopLevelItems(0, list)
+        try:
+            #adOUs = self.get_ad_tree()
+            adOUs = ["asd\\asdqw", "wqe\\qweqe", "asd\\123ew", "asd\\123ew\\234"]
+        except:
+            pass
+        else:
+            list = self.tree_widget_list(adOUs)
+            self.adTree.insertTopLevelItems(0, list)
 
 
     def adTreeItemClicked(self):
@@ -119,20 +123,23 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
 
     def get_ad_tree(self):
-        query = pyad.adquery.ADQuery()
-
-        query.execute_query(
-            attributes=["distinguishedName", "description"],
-            where_clause="objectClass = 'organizationalUnit'"
-            )
-        ous = []
-        for row in query.get_results():
-            path = row["distinguishedName"].replace(",OU=", "\\").replace("OU=","")
-            path = path.split("\\")
-            path = reversed(path)
-            path = "\\".join(path)
-            ous += [path]
-        return ous
+        try:
+            query = pyad.adquery.ADQuery()
+            query.execute_query(
+                attributes=["distinguishedName", "description"],
+                where_clause="objectClass = 'organizationalUnit'"
+                )
+        except:
+            raise Exception
+        else:
+            ous = []
+            for row in query.get_results():
+                path = row["distinguishedName"].replace(",OU=", "\\").replace("OU=","")
+                path = path.split("\\")
+                path = reversed(path)
+                path = "\\".join(path)
+                ous += [path]
+            return ous
 
     def tree_widget_list(self, show_list):
         """
