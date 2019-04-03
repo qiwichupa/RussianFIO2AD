@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'main.ui',
 # licensing of 'main.ui' applies.
 #
-# Created: Wed Apr  3 10:35:44 2019
+# Created: Wed Apr  3 15:04:57 2019
 #      by: pyside2-uic  running on PySide2 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -45,6 +45,7 @@ class Ui_Dialog(object):
         self.pasteO.setObjectName("pasteO")
         self.gridLayout_3.addWidget(self.pasteO, 0, 3, 1, 1)
         self.namesTable = QtWidgets.QTableWidget(self.frame_2)
+        self.namesTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.namesTable.setHorizontalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
         self.namesTable.setWordWrap(False)
         self.namesTable.setObjectName("namesTable")
@@ -82,6 +83,7 @@ class Ui_Dialog(object):
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.loginsTable = QtWidgets.QTableWidget(self.frame)
+        self.loginsTable.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.loginsTable.setWordWrap(False)
         self.loginsTable.setObjectName("loginsTable")
         self.loginsTable.setColumnCount(3)
@@ -110,6 +112,7 @@ class Ui_Dialog(object):
         self.passwordMask.setObjectName("passwordMask")
         self.gridLayout_2.addWidget(self.passwordMask, 0, 3, 1, 1)
         self.loginTemplate = QtWidgets.QLineEdit(self.frame)
+        self.loginTemplate.setPlaceholderText("")
         self.loginTemplate.setObjectName("loginTemplate")
         self.gridLayout_2.addWidget(self.loginTemplate, 0, 2, 1, 1)
         self.gridLogins.addWidget(self.frame, 0, 1, 1, 1)
@@ -127,7 +130,7 @@ class Ui_Dialog(object):
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.adTree = QtWidgets.QTreeWidget(self.frame_3)
         self.adTree.setObjectName("adTree")
-        self.adTree.headerItem().setText(0, "1")
+        self.adTree.headerItem().setText(0, "Выбери OU")
         self.gridLayout_4.addWidget(self.adTree, 1, 1, 1, 1)
         self.createAccounts = QtWidgets.QPushButton(self.frame_3)
         self.createAccounts.setEnabled(False)
@@ -145,18 +148,22 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QtWidgets.QApplication.translate("Dialog", "Dialog", None, -1))
-        self.pasteFIO.setText(QtWidgets.QApplication.translate("Dialog", "Paste All", None, -1))
-        self.pasteF.setText(QtWidgets.QApplication.translate("Dialog", "P.F", None, -1))
-        self.pasteI.setText(QtWidgets.QApplication.translate("Dialog", "P.I", None, -1))
-        self.pasteO.setText(QtWidgets.QApplication.translate("Dialog", "P.O", None, -1))
-        self.namesTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Dialog", "F", None, -1))
-        self.namesTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "I", None, -1))
-        self.namesTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "O", None, -1))
+        self.pasteFIO.setText(QtWidgets.QApplication.translate("Dialog", "Вставить ФИО", None, -1))
+        self.pasteF.setText(QtWidgets.QApplication.translate("Dialog", "Только Ф", None, -1))
+        self.pasteI.setText(QtWidgets.QApplication.translate("Dialog", "Только И", None, -1))
+        self.pasteO.setText(QtWidgets.QApplication.translate("Dialog", "Только О", None, -1))
+        self.namesTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Dialog", "Фамилия", None, -1))
+        self.namesTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "Имя", None, -1))
+        self.namesTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "Отчество", None, -1))
         self.loginsTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Dialog", "DisplayName", None, -1))
         self.loginsTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "Login", None, -1))
-        self.loginsTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "Pass", None, -1))
+        self.loginsTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "Password", None, -1))
         self.genLogins.setText(QtWidgets.QApplication.translate("Dialog", "Generate Logins", None, -1))
         self.copyLogins.setText(QtWidgets.QApplication.translate("Dialog", "Copy Logins", None, -1))
+        self.loginPrefix.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "Префикс логина", None, -1))
+        self.passwordMask.setToolTip(QtWidgets.QApplication.translate("Dialog", "<html><head/><body><p>! - БОЛЬШАЯ БУКВА<br/>@ - маленькая буква<br/># - цифра<br/>$ - знак пунктуации<br/><br/>Например:<br/>!@###$### - Rd834)214</p></body></html>", None, -1))
+        self.passwordMask.setText(QtWidgets.QApplication.translate("Dialog", "!@######", None, -1))
+        self.loginTemplate.setToolTip(QtWidgets.QApplication.translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">f</span> - фамилия<br/><span style=\" font-weight:600;\">i</span> - имя<br/><span style=\" font-weight:600;\">o</span> - отчество<br/><br/>Используйте цифры, например:<br/><span style=\" font-weight:600;\">i2</span> - две первых буквы имени (транслитерированного)<br/><br/><span style=\" font-weight:600;\">f_i1o1</span> - Ivanov_II</p></body></html>", None, -1))
         self.loginTemplate.setText(QtWidgets.QApplication.translate("Dialog", "f_i1o1", None, -1))
         self.createAccounts.setText(QtWidgets.QApplication.translate("Dialog", "Create Accounts in:", None, -1))
 

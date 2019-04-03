@@ -57,33 +57,36 @@
           <item row="0" column="0">
            <widget class="QPushButton" name="pasteFIO">
             <property name="text">
-             <string>Paste All</string>
+             <string>Вставить ФИО</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
            <widget class="QPushButton" name="pasteF">
             <property name="text">
-             <string>P.F</string>
+             <string>Только Ф</string>
             </property>
            </widget>
           </item>
           <item row="0" column="2">
            <widget class="QPushButton" name="pasteI">
             <property name="text">
-             <string>P.I</string>
+             <string>Только И</string>
             </property>
            </widget>
           </item>
           <item row="0" column="3">
            <widget class="QPushButton" name="pasteO">
             <property name="text">
-             <string>P.O</string>
+             <string>Только О</string>
             </property>
            </widget>
           </item>
           <item row="1" column="0" colspan="4">
            <widget class="QTableWidget" name="namesTable">
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
             <property name="horizontalScrollMode">
              <enum>QAbstractItemView::ScrollPerPixel</enum>
             </property>
@@ -107,17 +110,17 @@
             </attribute>
             <column>
              <property name="text">
-              <string>F</string>
+              <string>Фамилия</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>I</string>
+              <string>Имя</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>O</string>
+              <string>Отчество</string>
              </property>
             </column>
            </widget>
@@ -164,6 +167,9 @@
           </property>
           <item row="1" column="1" colspan="3">
            <widget class="QTableWidget" name="loginsTable">
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
+            </property>
             <property name="wordWrap">
              <bool>false</bool>
             </property>
@@ -191,7 +197,7 @@
             </column>
             <column>
              <property name="text">
-              <string>Pass</string>
+              <string>Password</string>
              </property>
             </column>
            </widget>
@@ -211,15 +217,32 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="loginPrefix"/>
+           <widget class="QLineEdit" name="loginPrefix">
+            <property name="placeholderText">
+             <string>Префикс логина</string>
+            </property>
+           </widget>
           </item>
           <item row="0" column="3">
-           <widget class="QLineEdit" name="passwordMask"/>
+           <widget class="QLineEdit" name="passwordMask">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;! - БОЛЬШАЯ БУКВА&lt;br/&gt;@ - маленькая буква&lt;br/&gt;# - цифра&lt;br/&gt;$ - знак пунктуации&lt;br/&gt;&lt;br/&gt;Например:&lt;br/&gt;!@###$### - Rd834)214&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>!@######</string>
+            </property>
+           </widget>
           </item>
           <item row="0" column="2">
            <widget class="QLineEdit" name="loginTemplate">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;f&lt;/span&gt; - фамилия&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;i&lt;/span&gt; - имя&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;o&lt;/span&gt; - отчество&lt;br/&gt;&lt;br/&gt;Используйте цифры, например:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;i2&lt;/span&gt; - две первых буквы имени (транслитерированного)&lt;br/&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;f_i1o1&lt;/span&gt; - Ivanov_II&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>f_i1o1</string>
+            </property>
+            <property name="placeholderText">
+             <string/>
             </property>
            </widget>
           </item>
@@ -255,7 +278,7 @@
            <widget class="QTreeWidget" name="adTree">
             <column>
              <property name="text">
-              <string notr="true">1</string>
+              <string notr="true">Выбери OU</string>
              </property>
             </column>
            </widget>
