@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'main.ui',
 # licensing of 'main.ui' applies.
 #
-# Created: Wed Apr  3 10:09:25 2019
+# Created: Wed Apr  3 10:35:44 2019
 #      by: pyside2-uic  running on PySide2 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,10 +13,10 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(1023, 553)
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout(Dialog)
-        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        Dialog.resize(1023, 633)
+        self.gridLayout = QtWidgets.QGridLayout(Dialog)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout.setObjectName("gridLayout")
         self.splitter = QtWidgets.QSplitter(Dialog)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
@@ -81,18 +81,6 @@ class Ui_Dialog(object):
         self.gridLayout_2 = QtWidgets.QGridLayout(self.frame)
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setObjectName("gridLayout_2")
-        self.genLogins = QtWidgets.QPushButton(self.frame)
-        self.genLogins.setObjectName("genLogins")
-        self.gridLayout_2.addWidget(self.genLogins, 2, 1, 1, 1)
-        self.copyLogins = QtWidgets.QPushButton(self.frame)
-        self.copyLogins.setObjectName("copyLogins")
-        self.gridLayout_2.addWidget(self.copyLogins, 2, 3, 1, 1)
-        self.loginPrefix = QtWidgets.QLineEdit(self.frame)
-        self.loginPrefix.setObjectName("loginPrefix")
-        self.gridLayout_2.addWidget(self.loginPrefix, 0, 1, 1, 1)
-        self.passwordMask = QtWidgets.QLineEdit(self.frame)
-        self.passwordMask.setObjectName("passwordMask")
-        self.gridLayout_2.addWidget(self.passwordMask, 0, 3, 1, 1)
         self.loginsTable = QtWidgets.QTableWidget(self.frame)
         self.loginsTable.setWordWrap(False)
         self.loginsTable.setObjectName("loginsTable")
@@ -109,6 +97,18 @@ class Ui_Dialog(object):
         self.loginsTable.verticalHeader().setDefaultSectionSize(16)
         self.loginsTable.verticalHeader().setMinimumSectionSize(16)
         self.gridLayout_2.addWidget(self.loginsTable, 1, 1, 1, 3)
+        self.genLogins = QtWidgets.QPushButton(self.frame)
+        self.genLogins.setObjectName("genLogins")
+        self.gridLayout_2.addWidget(self.genLogins, 2, 1, 1, 1)
+        self.copyLogins = QtWidgets.QPushButton(self.frame)
+        self.copyLogins.setObjectName("copyLogins")
+        self.gridLayout_2.addWidget(self.copyLogins, 2, 3, 1, 1)
+        self.loginPrefix = QtWidgets.QLineEdit(self.frame)
+        self.loginPrefix.setObjectName("loginPrefix")
+        self.gridLayout_2.addWidget(self.loginPrefix, 0, 1, 1, 1)
+        self.passwordMask = QtWidgets.QLineEdit(self.frame)
+        self.passwordMask.setObjectName("passwordMask")
+        self.gridLayout_2.addWidget(self.passwordMask, 0, 3, 1, 1)
         self.loginTemplate = QtWidgets.QLineEdit(self.frame)
         self.loginTemplate.setObjectName("loginTemplate")
         self.gridLayout_2.addWidget(self.loginTemplate, 0, 2, 1, 1)
@@ -134,7 +134,11 @@ class Ui_Dialog(object):
         self.createAccounts.setObjectName("createAccounts")
         self.gridLayout_4.addWidget(self.createAccounts, 0, 1, 1, 1)
         self.gridAD.addWidget(self.frame_3, 0, 0, 1, 1)
-        self.horizontalLayout_2.addWidget(self.splitter)
+        self.logBrowser = QtWidgets.QTextBrowser(self.gridLayoutWidget_3)
+        self.logBrowser.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
+        self.logBrowser.setObjectName("logBrowser")
+        self.gridAD.addWidget(self.logBrowser, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -148,11 +152,11 @@ class Ui_Dialog(object):
         self.namesTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Dialog", "F", None, -1))
         self.namesTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "I", None, -1))
         self.namesTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "O", None, -1))
-        self.genLogins.setText(QtWidgets.QApplication.translate("Dialog", "Generate Logins", None, -1))
-        self.copyLogins.setText(QtWidgets.QApplication.translate("Dialog", "Copy Logins", None, -1))
         self.loginsTable.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Dialog", "DisplayName", None, -1))
         self.loginsTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "Login", None, -1))
         self.loginsTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "Pass", None, -1))
+        self.genLogins.setText(QtWidgets.QApplication.translate("Dialog", "Generate Logins", None, -1))
+        self.copyLogins.setText(QtWidgets.QApplication.translate("Dialog", "Copy Logins", None, -1))
         self.loginTemplate.setText(QtWidgets.QApplication.translate("Dialog", "f_i1o1", None, -1))
         self.createAccounts.setText(QtWidgets.QApplication.translate("Dialog", "Create Accounts in:", None, -1))
 

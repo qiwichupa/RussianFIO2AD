@@ -77,7 +77,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         self.genLogins.clicked.connect(self.genLoginsClicked)
         self.copyLogins.clicked.connect(self.copySelectedToClipboard)
 
-        self.pasteF.clicked.connect(self.createADAccounts)
+        self.createAccounts.clicked.connect(self.createADAccounts)
 
         #adOUs = self.get_ad_tree()
         adOUs = ["asd\\asdqw", "wqe\\qweqe", "asd\\123ew", "asd\\123ew\\234"]
@@ -98,15 +98,19 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                     parents = [index.sibling(index.row(), 0).data()] + parents
 
 
-            path = "/".join(parents + [selectedText])
-            self.adTree.setHeaderLabel(path)
+            self.adPath = "/".join(parents + [selectedText])
+            self.adTree.setHeaderLabel(self.adPath)
 
     def createADAccounts(self):
-        item = self.adTree.selectedItems()
-        if item:
-            baseNode = item[0]
-            getChildNode = baseNode.text(0)
-            print(getChildNode)
+        if self.adPath:
+            for i in range(0, self.loginsTable.rowCount()):
+
+                displayName = self.loginsTable.item(i, 0).text()
+                login = self.loginsTable.item(i, 1).text()
+                password = self.loginsTable.item(i, 2).text()
+
+                self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format(self.adPath))
+                self.logBrowser.append("""{}: {}, {} """.format(displayName, login, password))
 
 
     def get_ad_tree(self):
