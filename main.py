@@ -73,7 +73,12 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
         self.clip = QtGui.QClipboard()
         self.adTree.itemClicked.connect(self.adTreeItemClicked)
+
         self.pasteFIO.clicked.connect(self.pasteFIOClicked)
+        self.pasteF.clicked.connect(self.pasteFClicked)
+        self.pasteI.clicked.connect(self.pasteIClicked)
+        self.pasteO.clicked.connect(self.pasteOClicked)
+
         self.genLogins.clicked.connect(self.genLoginsClicked)
         self.copyLogins.clicked.connect(self.copySelectedToClipboard)
 
@@ -103,13 +108,13 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
     def createADAccounts(self):
         if self.adPath:
+            self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format(self.adPath))
             for i in range(0, self.loginsTable.rowCount()):
 
                 displayName = self.loginsTable.item(i, 0).text()
                 login = self.loginsTable.item(i, 1).text()
                 password = self.loginsTable.item(i, 2).text()
 
-                self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format(self.adPath))
                 self.logBrowser.append("""{}: {}, {} """.format(displayName, login, password))
 
 
@@ -160,6 +165,39 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             items.append(entry) if entry.text(0) not in items_text else None
         return items
 
+    def pasteFClicked(self):
+        clipboard = self.clip.text().splitlines()
+
+        row = 0
+        for f in clipboard:
+            f = f.strip()
+            if row >= self.namesTable.rowCount():
+                self.namesTable.insertRow(row)
+            self.namesTable.setItem(row, 0, QtWidgets.QTableWidgetItem(f))
+            row += 1
+
+    def pasteIClicked(self):
+        clipboard = self.clip.text().splitlines()
+
+        row = 0
+        for f in clipboard:
+            f = f.strip()
+            if row >= self.namesTable.rowCount():
+                self.namesTable.insertRow(row)
+            self.namesTable.setItem(row, 1, QtWidgets.QTableWidgetItem(f))
+            row += 1
+
+    def pasteOClicked(self):
+        clipboard = self.clip.text().splitlines()
+
+        row = 0
+        for f in clipboard:
+            f = f.strip()
+            if row >= self.namesTable.rowCount():
+                self.namesTable.insertRow(row)
+            self.namesTable.setItem(row, 2, QtWidgets.QTableWidgetItem(f))
+            row += 1
+
     def pasteFIOClicked(self):
         """Fills FIO table from clipboard"""
         clipboard = self.clip.text().splitlines()
@@ -188,10 +226,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             i = self.namesTable.item(fioRow, 1).text()
             o = self.namesTable.item(fioRow, 2).text()
             fio = "{} {} {}".format(f,i,o)
-            password = (random.choice(string.ascii_uppercase) + random.choice(string.ascii_lowercase) + str(random.randint(0,9))
-                        + str(random.randint(0, 9)) + str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9))
-                        + str(random.randint(0, 9))
-                        )
+            password = self.password_templating()
 
             login = self.login_templating(f,i,o)
 
@@ -227,6 +262,24 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
         return login
 
+    def password_templating(self):
+
+        template = self.passwordMask.text()
+        password = ""
+
+        for i in template:
+            if i == "!":
+                password += random.choice(string.ascii_uppercase)
+            elif i == "@":
+                password += random.choice(string.ascii_lowercase)
+            elif i == "#":
+                password += random.choice(string.digits)
+            elif i == "$":
+                password += random.choice(string.punctuation)
+            else:
+                password += i
+
+        return password
 
     def copySelectedToClipboard(self):
         """Sends selected rows to clipboard as tab-separated text"""
