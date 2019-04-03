@@ -5,8 +5,8 @@ import PySide2.QtWidgets as QtWidgets
 
 import logging
 import os
-#from pyad import pyad
-#import pyad.adquery
+from pyad import pyad
+import pyad.adquery
 import random
 import regex
 import string
@@ -85,8 +85,8 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         self.createAccounts.clicked.connect(self.createADAccounts)
 
         try:
-            #adOUs = self.get_ad_tree()
-            adOUs = ["asd\\asdqw", "wqe\\qweqe", "asd\\123ew", "asd\\123ew\\234"]
+            adOUs = self.get_ad_tree()
+            #adOUs = ["asd\\asdqw", "wqe\\qweqe", "asd\\123ew", "asd\\123ew\\234"]
         except:
             pass
         else:
@@ -111,6 +111,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             self.adTree.setHeaderLabel(self.adPath)
 
     def createADAccounts(self):
+        self.createAccounts.setDisabled(True)
         if self.adPath:
             self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format(self.adPath))
             for i in range(0, self.loginsTable.rowCount()):
@@ -118,8 +119,29 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                 displayName = self.loginsTable.item(i, 0).text()
                 login = self.loginsTable.item(i, 1).text()
                 password = self.loginsTable.item(i, 2).text()
+                container = "OU=" + ", OU=".join(reversed(self.adPath.split("/"))) + ", " + self.domain
 
-                self.logBrowser.append("""{}: {}, {} """.format(displayName, login, password))
+                self.add_user_to_ad(displayName,login,password,container)
+
+        self.createAccounts.setEnabled(True)
+
+
+    def add_user_to_ad(self, displayName, login, password, container):
+        print(container)
+
+        ou = pyad.adcontainer.ADContainer.from_dn(container)
+        try:
+            new_user = pyad.aduser.ADUser.create(displayName, ou, password=password,
+                                             optional_attributes={
+                                                 "displayName": displayName,
+                                                 "sAMAccountName": login,
+                                                 "userPrincipalName": login
+                                              })
+        except Exception as e:
+            self.logBrowser.append("""\nError: {}({}: {}, {}) """.format(str(e), displayName, login, password))
+        else:
+            self.logBrowser.append("""{}: {}, {} """.format(displayName, login, password))
+
 
 
     def get_ad_tree(self):
@@ -132,10 +154,14 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         except:
             raise Exception
         else:
+            self.domain = False
             ous = []
             for row in query.get_results():
-                path = row["distinguishedName"].replace(",OU=", "\\").replace("OU=","")
-                path = path.split("\\")
+                path = row["distinguishedName"].replace(",OU=", "\\").replace("OU=", "")
+                while self.domain == False:
+                    self.domain = "DC=" + path.split(",DC=", maxsplit=1)[1]
+                    self.logBrowser.append("Domain: " + self.domain)
+                path = path.split(",DC=")[0].split("\\")
                 path = reversed(path)
                 path = "\\".join(path)
                 ous += [path]
