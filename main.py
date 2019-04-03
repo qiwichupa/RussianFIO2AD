@@ -5,8 +5,8 @@ import PySide2.QtWidgets as QtWidgets
 
 import logging
 import os
-from pyad import pyad
-import pyad.adquery
+#from pyad import pyad
+#import pyad.adquery
 import random
 import regex
 import string
@@ -72,17 +72,34 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         self.setupUi(self)
 
         self.clip = QtGui.QClipboard()
-
+        self.adTree.itemClicked.connect(self.adTreeItemClicked)
         self.pasteFIO.clicked.connect(self.pasteFIOClicked)
         self.genLogins.clicked.connect(self.genLoginsClicked)
         self.copyLogins.clicked.connect(self.copySelectedToClipboard)
 
         self.pasteF.clicked.connect(self.createADAccounts)
 
-        adOUs = self.get_ad_tree()
+        #adOUs = self.get_ad_tree()
+        adOUs = ["asd\\asdqw", "wqe\\qweqe", "asd\\123ew", "asd\\123ew\\234"]
         list = self.tree_widget_list(adOUs)
         self.adTree.insertTopLevelItems(0, list)
 
+
+    def adTreeItemClicked(self):
+        item = self.adTree.selectedItems()
+        if item:
+            self.createAccounts.setEnabled(True)
+            selectedText = item[0].text(0)
+
+            parents = []
+            for index in self.adTree.selectedIndexes():
+                while index.parent().isValid():
+                    index = index.parent()
+                    parents = [index.sibling(index.row(), 0).data()] + parents
+
+
+            path = "/".join(parents + [selectedText])
+            self.adTree.setHeaderLabel(path)
 
     def createADAccounts(self):
         item = self.adTree.selectedItems()

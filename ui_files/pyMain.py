@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'main.ui',
 # licensing of 'main.ui' applies.
 #
-# Created: Tue Apr  2 16:59:04 2019
+# Created: Wed Apr  3 10:09:25 2019
 #      by: pyside2-uic  running on PySide2 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -125,13 +125,14 @@ class Ui_Dialog(object):
         self.gridLayout_4 = QtWidgets.QGridLayout(self.frame_3)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_4.setObjectName("gridLayout_4")
-        self.domainServer = QtWidgets.QLineEdit(self.frame_3)
-        self.domainServer.setObjectName("domainServer")
-        self.gridLayout_4.addWidget(self.domainServer, 0, 0, 1, 1)
         self.adTree = QtWidgets.QTreeWidget(self.frame_3)
         self.adTree.setObjectName("adTree")
         self.adTree.headerItem().setText(0, "1")
-        self.gridLayout_4.addWidget(self.adTree, 1, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.adTree, 1, 1, 1, 1)
+        self.createAccounts = QtWidgets.QPushButton(self.frame_3)
+        self.createAccounts.setEnabled(False)
+        self.createAccounts.setObjectName("createAccounts")
+        self.gridLayout_4.addWidget(self.createAccounts, 0, 1, 1, 1)
         self.gridAD.addWidget(self.frame_3, 0, 0, 1, 1)
         self.horizontalLayout_2.addWidget(self.splitter)
 
@@ -153,4 +154,5 @@ class Ui_Dialog(object):
         self.loginsTable.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "Login", None, -1))
         self.loginsTable.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "Pass", None, -1))
         self.loginTemplate.setText(QtWidgets.QApplication.translate("Dialog", "f_i1o1", None, -1))
+        self.createAccounts.setText(QtWidgets.QApplication.translate("Dialog", "Create Accounts in:", None, -1))
 
