@@ -6,8 +6,8 @@ import PySide2.QtWidgets as QtWidgets
 import logging
 import os
 
-#from pyad import pyad
-#import pyad.adquery
+from pyad import pyad
+import pyad.adquery
 import random
 import regex
 import string
@@ -101,7 +101,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
         try:
             adOUs = self.get_ad_tree()
-            #adOUs = ["asd\\asdqw", "wqe\\qweqe", "asd\\123ew", "asd\\123ew\\234"]
+            #adOUs = ["asd\\asdqw", """wqe\\q "weqe" """, "asd\\123ew", "asd\\123ew\\234"]
         except Exception as e:
             print(str(e))
         else:
@@ -175,15 +175,14 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             domain = False
             ous = []
             for row in query.get_results():
-                path = row["distinguishedName"].replace(",OU=", "\\").replace("OU=", "")
+
                 while domain == False:
-                    self.domainList = path.split(",DC=", maxsplit=1)[1].split(",DC=")
+                    self.domainList = row["distinguishedName"].split(",DC=", maxsplit=1)[1].split(",DC=")
                     domain = ".".join(self.domainList)
                     self.logBrowser.append("Domain: " + domain)
-                path = path.split(",DC=")[0].split("\\")
-                path = reversed(path)
-                path = "\\".join(path)
-                ous += [path]
+                pathList = regex.subf("^OU=", "", row["distinguishedName"].split(",DC=")[0]).split(",OU=")
+                reversedPathList = list(reversed(pathList))
+                ous += [reversedPathList]
             return ous
 
     def tree_widget_list(self, show_list):
@@ -193,8 +192,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         :return:
         """
         items = []
-        for item in show_list:
-            item_parts = item.split('\\')
+        for item_parts in show_list:
 
             entry = QtWidgets.QTreeWidgetItem(None, [item_parts[0]])
             items_text = [i.text(0) for i in items]
