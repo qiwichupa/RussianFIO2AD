@@ -6,8 +6,8 @@ import PySide2.QtWidgets as QtWidgets
 import logging
 import os
 
-from pyad import pyad
-import pyad.adquery
+#from pyad import pyad
+#import pyad.adquery
 import random
 import regex
 import string
@@ -72,7 +72,6 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         QtWidgets.QDialog.__init__(self)
         self.setupUi(self)
 
-        self.ad = pyad
         self.clip = QtGui.QClipboard()
         self.adTree.itemClicked.connect(self.adTreeItemClicked)
 
@@ -98,7 +97,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
     def connectToADClicked(self):
         #pyad.set_defaults(ldap_server=self.adServer.text(), username=self.adUser.text(), password=self.adPassword.text())
-        #self.ad.pyad_setdefaults(ldap_server="dc1.test.local",username="user",password="123qweQWE")
+        #pyad.pyad_setdefaults(ldap_server="dc1.test.local",username="user",password="123qweQWE")
 
         try:
             adOUs = self.get_ad_tree()
@@ -148,9 +147,9 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
 
     def add_user_to_ad(self, displayName, login, password, container):
-        ou = self.ad.adcontainer.ADContainer.from_dn(container)
+        ou = pyad.adcontainer.ADContainer.from_dn(container)
         try:
-            new_user = self.ad.aduser.ADUser.create(displayName, ou, password=password,
+            new_user = pyad.aduser.ADUser.create(displayName, ou, password=password,
                                              optional_attributes={
                                                  "displayName": displayName,
                                                  "sAMAccountName": login,
@@ -165,7 +164,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
     def get_ad_tree(self):
         try:
-            query = self.ad.adquery.ADQuery()
+            query = pyad.adquery.ADQuery()
             query.execute_query(
                 attributes=["distinguishedName", "description"],
                 where_clause="objectClass = 'organizationalUnit'"
