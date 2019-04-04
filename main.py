@@ -5,6 +5,7 @@ import PySide2.QtWidgets as QtWidgets
 
 import logging
 import os
+
 from pyad import pyad
 import pyad.adquery
 import random
@@ -71,6 +72,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         QtWidgets.QDialog.__init__(self)
         self.setupUi(self)
 
+        self.ad = pyad
         self.clip = QtGui.QClipboard()
         self.adTree.itemClicked.connect(self.adTreeItemClicked)
 
@@ -82,13 +84,27 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         self.genLogins.clicked.connect(self.genLoginsClicked)
         self.copyLogins.clicked.connect(self.copySelectedToClipboard)
 
+        self.connectToAD.clicked.connect(self.connectToADClicked)
         self.createAccounts.clicked.connect(self.createADAccounts)
+
+        self.connectToAD.hide()
+        self.adServer.hide()
+        self.adUser.hide()
+        self.adPassword.hide()
+
+        self.connectToADClicked()
+
+
+
+    def connectToADClicked(self):
+        #pyad.set_defaults(ldap_server=self.adServer.text(), username=self.adUser.text(), password=self.adPassword.text())
+        #self.ad.pyad_setdefaults(ldap_server="dc1.test.local",username="user",password="123qweQWE")
 
         try:
             adOUs = self.get_ad_tree()
             #adOUs = ["asd\\asdqw", "wqe\\qweqe", "asd\\123ew", "asd\\123ew\\234"]
-        except:
-            pass
+        except Exception as e:
+            print(str(e))
         else:
             list = self.tree_widget_list(adOUs)
             self.adTree.insertTopLevelItems(0, list)
@@ -116,26 +132,29 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format(self.adPath))
             for i in range(0, self.loginsTable.rowCount()):
 
-                displayName = self.loginsTable.item(i, 0).text()
-                login = self.loginsTable.item(i, 1).text()
-                password = self.loginsTable.item(i, 2).text()
-                container = "OU=" + ", OU=".join(reversed(self.adPath.split("/"))) + ", " + self.domain
+                displayName = self.loginsTable.item(i, 0).text().strip()
+                login = self.loginsTable.item(i, 1).text().strip()
+                password = self.loginsTable.item(i, 2).text().strip()
 
-                self.add_user_to_ad(displayName,login,password,container)
+                domain = "DC=" + ",DC=".join(self.domainList)
+                container = "OU=" + ", OU=".join(reversed(self.adPath.split("/"))) + ", " + domain
+
+                if displayName != "" and login != "" and password != "":
+                    self.add_user_to_ad(displayName,login,password,container)
+                else:
+                    self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
 
         self.createAccounts.setEnabled(True)
 
 
     def add_user_to_ad(self, displayName, login, password, container):
-        print(container)
-
-        ou = pyad.adcontainer.ADContainer.from_dn(container)
+        ou = self.ad.adcontainer.ADContainer.from_dn(container)
         try:
-            new_user = pyad.aduser.ADUser.create(displayName, ou, password=password,
+            new_user = self.ad.aduser.ADUser.create(displayName, ou, password=password,
                                              optional_attributes={
                                                  "displayName": displayName,
                                                  "sAMAccountName": login,
-                                                 "userPrincipalName": login
+                                                 "userPrincipalName": login + "@" + ".".join(self.domainList)
                                               })
         except Exception as e:
             self.logBrowser.append("""\nError: {}({}: {}, {}) """.format(str(e), displayName, login, password))
@@ -146,21 +165,22 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
     def get_ad_tree(self):
         try:
-            query = pyad.adquery.ADQuery()
+            query = self.ad.adquery.ADQuery()
             query.execute_query(
                 attributes=["distinguishedName", "description"],
                 where_clause="objectClass = 'organizationalUnit'"
                 )
-        except:
-            raise Exception
+        except Exception as e:
+            raise Exception(str(e))
         else:
-            self.domain = False
+            domain = False
             ous = []
             for row in query.get_results():
                 path = row["distinguishedName"].replace(",OU=", "\\").replace("OU=", "")
-                while self.domain == False:
-                    self.domain = "DC=" + path.split(",DC=", maxsplit=1)[1]
-                    self.logBrowser.append("Domain: " + self.domain)
+                while domain == False:
+                    self.domainList = path.split(",DC=", maxsplit=1)[1].split(",DC=")
+                    domain = ".".join(self.domainList)
+                    self.logBrowser.append("Domain: " + domain)
                 path = path.split(",DC=")[0].split("\\")
                 path = reversed(path)
                 path = "\\".join(path)

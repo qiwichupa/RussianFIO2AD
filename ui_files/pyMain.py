@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main.ui',
-# licensing of 'main.ui' applies.
+# Form implementation generated from reading ui file './main.ui',
+# licensing of './main.ui' applies.
 #
-# Created: Wed Apr  3 15:20:21 2019
-#      by: pyside2-uic  running on PySide2 5.12.1
+# Created: Wed Apr  3 21:51:37 2019
+#      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -59,7 +59,7 @@ class Ui_Dialog(object):
         self.namesTable.setHorizontalHeaderItem(2, item)
         self.namesTable.horizontalHeader().setMinimumSectionSize(16)
         self.namesTable.horizontalHeader().setStretchLastSection(True)
-        self.namesTable.verticalHeader().setDefaultSectionSize(16)
+        self.namesTable.verticalHeader().setDefaultSectionSize(21)
         self.namesTable.verticalHeader().setMinimumSectionSize(16)
         self.namesTable.verticalHeader().setStretchLastSection(False)
         self.gridLayout_3.addWidget(self.namesTable, 1, 0, 1, 4)
@@ -96,7 +96,7 @@ class Ui_Dialog(object):
         self.loginsTable.setHorizontalHeaderItem(2, item)
         self.loginsTable.horizontalHeader().setMinimumSectionSize(16)
         self.loginsTable.horizontalHeader().setStretchLastSection(True)
-        self.loginsTable.verticalHeader().setDefaultSectionSize(16)
+        self.loginsTable.verticalHeader().setDefaultSectionSize(21)
         self.loginsTable.verticalHeader().setMinimumSectionSize(16)
         self.gridLayout_2.addWidget(self.loginsTable, 1, 1, 1, 3)
         self.genLogins = QtWidgets.QPushButton(self.frame)
@@ -128,19 +128,31 @@ class Ui_Dialog(object):
         self.gridLayout_4 = QtWidgets.QGridLayout(self.frame_3)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_4.setObjectName("gridLayout_4")
+        self.adPassword = QtWidgets.QLineEdit(self.frame_3)
+        self.adPassword.setObjectName("adPassword")
+        self.gridLayout_4.addWidget(self.adPassword, 1, 2, 1, 1)
         self.adTree = QtWidgets.QTreeWidget(self.frame_3)
         self.adTree.setObjectName("adTree")
         self.adTree.headerItem().setText(0, "Выбери OU")
-        self.gridLayout_4.addWidget(self.adTree, 1, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.adTree, 3, 0, 1, 3)
+        self.adUser = QtWidgets.QLineEdit(self.frame_3)
+        self.adUser.setObjectName("adUser")
+        self.gridLayout_4.addWidget(self.adUser, 1, 1, 1, 1)
+        self.connectToAD = QtWidgets.QPushButton(self.frame_3)
+        self.connectToAD.setObjectName("connectToAD")
+        self.gridLayout_4.addWidget(self.connectToAD, 0, 0, 1, 3)
         self.createAccounts = QtWidgets.QPushButton(self.frame_3)
         self.createAccounts.setEnabled(False)
         self.createAccounts.setObjectName("createAccounts")
-        self.gridLayout_4.addWidget(self.createAccounts, 0, 1, 1, 1)
-        self.gridAD.addWidget(self.frame_3, 0, 0, 1, 1)
-        self.logBrowser = QtWidgets.QTextBrowser(self.gridLayoutWidget_3)
+        self.gridLayout_4.addWidget(self.createAccounts, 2, 0, 1, 3)
+        self.adServer = QtWidgets.QLineEdit(self.frame_3)
+        self.adServer.setObjectName("adServer")
+        self.gridLayout_4.addWidget(self.adServer, 1, 0, 1, 1)
+        self.logBrowser = QtWidgets.QTextBrowser(self.frame_3)
         self.logBrowser.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
         self.logBrowser.setObjectName("logBrowser")
-        self.gridAD.addWidget(self.logBrowser, 1, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.logBrowser, 4, 0, 1, 3)
+        self.gridAD.addWidget(self.frame_3, 2, 3, 1, 1)
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
 
         self.retranslateUi(Dialog)
@@ -165,5 +177,9 @@ class Ui_Dialog(object):
         self.passwordMask.setText(QtWidgets.QApplication.translate("Dialog", "!@######", None, -1))
         self.loginTemplate.setToolTip(QtWidgets.QApplication.translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">f</span> - фамилия<br/><span style=\" font-weight:600;\">i</span> - имя<br/><span style=\" font-weight:600;\">o</span> - отчество<br/><br/>Используйте цифры, например:<br/><span style=\" font-weight:600;\">i2</span> - две первых буквы имени (транслитерированного)<br/><br/><span style=\" font-weight:600;\">f_i1o1</span> - Ivanov_II</p></body></html>", None, -1))
         self.loginTemplate.setText(QtWidgets.QApplication.translate("Dialog", "f_i1o1", None, -1))
+        self.adPassword.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "password", None, -1))
+        self.adUser.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "user", None, -1))
+        self.connectToAD.setText(QtWidgets.QApplication.translate("Dialog", "Соединиться с AD по-умолчанию, или:", None, -1))
         self.createAccounts.setText(QtWidgets.QApplication.translate("Dialog", "Создать аккаунты в:", None, -1))
+        self.adServer.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "ad controller", None, -1))
 
