@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'main.ui',
 # licensing of 'main.ui' applies.
 #
-# Created: Thu Apr  4 12:47:19 2019
+# Created: Thu Apr  4 12:54:07 2019
 #      by: pyside2-uic  running on PySide2 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -211,6 +211,6 @@ class Ui_Dialog(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Homepage: github.com<br />Icon by <a href=\"https://www.freepik.com/\"><span style=\" text-decoration: underline; color:#0000ff;\">Freepik</span></a> from <a href=\"https://www.flaticon.com/\"><span style=\" text-decoration: underline; color:#0000ff;\">www.flaticon.com</span></a> is licensed by <a href=\"http://creativecommons.org/licenses/by/3.0/\"><span style=\" text-decoration: underline; color:#0000ff;\">CC 3.0 BY</span></a></p></body></html>", None, -1))
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Homepage: <a href=\"https://github.com/qiwichupa/RussianFIO2AD\"><span style=\" text-decoration: underline; color:#0000ff;\">github.com</span></a><br />Icon by <a href=\"https://www.freepik.com/\"><span style=\" text-decoration: underline; color:#0000ff;\">Freepik</span></a> from <a href=\"https://www.flaticon.com/\"><span style=\" text-decoration: underline; color:#0000ff;\">www.flaticon.com</span></a> is licensed by <a href=\"http://creativecommons.org/licenses/by/3.0/\"><span style=\" text-decoration: underline; color:#0000ff;\">CC 3.0 BY</span></a></p></body></html>", None, -1))
 
 import icons_rc
