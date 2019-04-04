@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './main.ui',
-# licensing of './main.ui' applies.
+# Form implementation generated from reading ui file 'main.ui',
+# licensing of 'main.ui' applies.
 #
-# Created: Thu Apr  4 11:05:20 2019
-#      by: pyside2-uic  running on PySide2 5.12.0
+# Created: Thu Apr  4 12:47:19 2019
+#      by: pyside2-uic  running on PySide2 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -13,7 +13,10 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(1023, 633)
+        Dialog.resize(1103, 633)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/icons/icons/main.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Dialog.setWindowIcon(icon)
         self.gridLayout = QtWidgets.QGridLayout(Dialog)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
@@ -168,6 +171,9 @@ class Ui_Dialog(object):
         self.logBrowser.setLineWrapMode(QtWidgets.QTextEdit.NoWrap)
         self.logBrowser.setObjectName("logBrowser")
         self.gridLayout_4.addWidget(self.logBrowser, 4, 0, 1, 3)
+        self.label = QtWidgets.QLabel(self.frame_3)
+        self.label.setObjectName("label")
+        self.gridLayout_4.addWidget(self.label, 5, 0, 1, 1)
         self.gridAD.addWidget(self.frame_3, 2, 3, 1, 1)
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
 
@@ -201,4 +207,10 @@ class Ui_Dialog(object):
         self.connectToAD.setText(QtWidgets.QApplication.translate("Dialog", "Соединиться с AD по-умолчанию, или:", None, -1))
         self.createAccounts.setText(QtWidgets.QApplication.translate("Dialog", "Создать аккаунты в:", None, -1))
         self.adServer.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "ad controller", None, -1))
+        self.label.setText(QtWidgets.QApplication.translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Homepage: github.com<br />Icon by <a href=\"https://www.freepik.com/\"><span style=\" text-decoration: underline; color:#0000ff;\">Freepik</span></a> from <a href=\"https://www.flaticon.com/\"><span style=\" text-decoration: underline; color:#0000ff;\">www.flaticon.com</span></a> is licensed by <a href=\"http://creativecommons.org/licenses/by/3.0/\"><span style=\" text-decoration: underline; color:#0000ff;\">CC 3.0 BY</span></a></p></body></html>", None, -1))
 
+import icons_rc

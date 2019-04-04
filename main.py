@@ -72,6 +72,8 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         QtWidgets.QDialog.__init__(self)
         self.setupUi(self)
 
+        self.setWindowTitle(__appname__ + " (v. " + __version__ + ")")
+
         self.clip = QtGui.QClipboard()
         self.adTree.itemClicked.connect(self.adTreeItemClicked)
 
@@ -194,7 +196,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                     self.logBrowser.append("Domain: " + domain)
                 pathList = regex.subf("^OU=", "", row["distinguishedName"].split(",DC=")[0]).split(",OU=")
                 reversedPathList = list(reversed(pathList))
-                incorrectChars = list(string.punctuation) # Некорректно обрабатываются при попытке обратиться к контейнеру в процессе создания учеток
+                incorrectChars = ["\\"] # Некорректно обрабатываются при попытке обратиться к контейнеру в процессе создания учеток
                 if any(True for x in incorrectChars if x in "".join(reversedPathList)):
                     pass
                 else:
