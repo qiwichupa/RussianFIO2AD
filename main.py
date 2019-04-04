@@ -122,13 +122,14 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                     parents = [index.sibling(index.row(), 0).data()] + parents
 
 
-            self.adPath = "/".join(parents + [selectedText])
-            self.adTree.setHeaderLabel(self.adPath)
+            self.adPathListReversed = parents + [selectedText]
+            self.adPathList = list(reversed(self.adPathListReversed))
+            self.adTree.setHeaderLabel("/".join(self.adPathListReversed))
 
     def createADAccounts(self):
         self.createAccounts.setDisabled(True)
-        if self.adPath:
-            self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format(self.adPath))
+        if self.adPathList:
+            self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format("/".join(self.adPathListReversed)))
             for i in range(0, self.loginsTable.rowCount()):
 
                 displayName = self.loginsTable.item(i, 0).text().strip()
@@ -136,7 +137,8 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                 password = self.loginsTable.item(i, 2).text().strip()
 
                 domain = "DC=" + ",DC=".join(self.domainList)
-                container = "OU=" + ", OU=".join(reversed(self.adPath.split("/"))) + ", " + domain
+                container = "OU=" + ", OU=".join(self.adPathList) + "," + domain
+
 
                 if displayName != "" and login != "" and password != "":
                     self.add_user_to_ad(displayName,login,password,container)
@@ -148,15 +150,25 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
     def add_user_to_ad(self, displayName, login, password, container):
         ou = pyad.adcontainer.ADContainer.from_dn(container)
+
+        if self.descriptionLineEdit.text().strip() != "":
+            description = self.descriptionLineEdit.text()
+        else:
+            description = ""
         try:
-            new_user = pyad.aduser.ADUser.create(displayName, ou, password=password,
+            user = pyad.aduser.ADUser.create(displayName, ou, password=password,
                                              optional_attributes={
                                                  "displayName": displayName,
                                                  "sAMAccountName": login,
-                                                 "userPrincipalName": login + "@" + ".".join(self.domainList)
+                                                 "userPrincipalName": login + "@" + ".".join(self.domainList),
+                                                 "description": description
                                               })
+            if self.notExpiredPassCheckBox.isChecked():
+                user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
+            if self.disabledCheckBox.isChecked():
+                pyad.adobject.ADObject.disable(user)
         except Exception as e:
-            self.logBrowser.append("""\nError: {}({}: {}, {}) """.format(str(e), displayName, login, password))
+            self.logBrowser.append("""\nError: {}({}: {}, {})\n """.format(str(e), displayName, login, password))
         else:
             self.logBrowser.append("""{}: {}, {} """.format(displayName, login, password))
 
@@ -182,7 +194,11 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                     self.logBrowser.append("Domain: " + domain)
                 pathList = regex.subf("^OU=", "", row["distinguishedName"].split(",DC=")[0]).split(",OU=")
                 reversedPathList = list(reversed(pathList))
-                ous += [reversedPathList]
+                incorrectChars = list(string.punctuation) # Некорректно обрабатываются при попытке обратиться к контейнеру в процессе создания учеток
+                if any(True for x in incorrectChars if x in "".join(reversedPathList)):
+                    pass
+                else:
+                    ous += [reversedPathList]
             return ous
 
     def tree_widget_list(self, show_list):
