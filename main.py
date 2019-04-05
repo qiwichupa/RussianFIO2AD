@@ -98,9 +98,6 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
 
     def connectToADClicked(self):
-        #pyad.set_defaults(ldap_server=self.adServer.text(), username=self.adUser.text(), password=self.adPassword.text())
-        #pyad.pyad_setdefaults(ldap_server="dc1.test.local",username="user",password="123qweQWE")
-
         try:
             adOUs = self.get_ad_tree()
             #adOUs = ["asd\\asdqw", """wqe\\q "weqe" """, "asd\\123ew", "asd\\123ew\\234"]
@@ -139,7 +136,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                 password = self.loginsTable.item(i, 2).text().strip()
 
                 domain = "DC=" + ",DC=".join(self.domainList)
-                container = "OU=" + ", OU=".join(self.adPathList) + "," + domain
+                container = "OU=" + ",OU=".join(self.adPathList) + "," + domain
 
 
                 if displayName != "" and login != "" and password != "":
@@ -151,7 +148,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
 
     def add_user_to_ad(self, displayName, login, password, container):
-        ou = pyad.adcontainer.ADContainer.from_dn(container)
+        ou = utilities.get_container_from_dn(container)
 
         if self.descriptionLineEdit.text().strip() != "":
             description = self.descriptionLineEdit.text()
@@ -174,8 +171,6 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         else:
             self.logBrowser.append("""{}: {}, {} """.format(displayName, login, password))
 
-
-
     def get_ad_tree(self):
         try:
             query = pyad.adquery.ADQuery()
@@ -196,11 +191,14 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                     self.logBrowser.append("Domain: " + domain)
                 pathList = regex.subf("^OU=", "", row["distinguishedName"].split(",DC=")[0]).split(",OU=")
                 reversedPathList = list(reversed(pathList))
+                """
                 incorrectChars = ["\\"] # Некорректно обрабатываются при попытке обратиться к контейнеру в процессе создания учеток
                 if any(True for x in incorrectChars if x in "".join(reversedPathList)):
                     pass
                 else:
                     ous += [reversedPathList]
+                """
+                ous += [reversedPathList]
             return ous
 
     def tree_widget_list(self, show_list):

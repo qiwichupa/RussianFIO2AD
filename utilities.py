@@ -1,3 +1,5 @@
+from pyad import pyad
+
 def str2bool(arg):
     return(str(arg).lower() in ["true", "0", "ok"])
 
@@ -183,3 +185,29 @@ def translit(string):
         translit_string += char
 
     return translit_string
+
+def get_container_from_dn(dn, rootcontainer=None):
+    if rootcontainer is None:
+        rootcontainer = pyad.adcontainer.ADContainer.from_dn(pyad.adcontainer.ADContainer.default_domain)
+
+    try:
+        currentdn = rootcontainer.dn
+    except:
+        pass
+    else:
+        if dn == currentdn:
+            return rootcontainer
+
+    try:
+        children = rootcontainer.get_children(filter_=[pyad.adcontainer.ADContainer])
+    except:
+        return None
+
+    for c in children:
+        try:
+            container = get_container_from_dn(dn, rootcontainer=c)
+            if container is not None:
+                return container
+        except:
+            pass
+
