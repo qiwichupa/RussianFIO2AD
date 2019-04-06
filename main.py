@@ -176,16 +176,16 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
     def createADAccounts(self):
         self.createAccounts.setDisabled(True)
         if self.adPathList:
+            domain = "DC=" + ",DC=".join(self.domainList)
+            ou = "OU=" + ",OU=".join(self.adPathList) + "," + domain
+            container = utilities.get_container_from_dn(ou)
+
             self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format("/".join(self.adPathListReversed)))
             for i in range(0, self.tableLogins.rowCount()):
 
                 displayName = self.tableLogins.item(i, 0).text().strip()
                 login = self.tableLogins.item(i, 1).text().strip()
                 password = self.tableLogins.item(i, 2).text().strip()
-
-                domain = "DC=" + ",DC=".join(self.domainList)
-                container = "OU=" + ",OU=".join(self.adPathList) + "," + domain
-
 
                 if displayName != "" and login != "" and password != "":
                     self.add_user_to_ad(displayName,login,password,container)
@@ -196,7 +196,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
 
     def add_user_to_ad(self, displayName, login, password, container):
-        ou = utilities.get_container_from_dn(container)
+        ou = container
         """
         if self.descriptionLineEdit.text().strip() != "":
             description = self.descriptionLineEdit.text()
