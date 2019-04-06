@@ -67,6 +67,11 @@ except:
 
 
 class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
+    commonAttributes = {
+        "description": "",
+        "company": "",
+        "department": ""
+        }
 
     def __init__(self, parent=None):
         QtWidgets.QDialog.__init__(self)
@@ -74,30 +79,73 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
         self.setWindowTitle(__appname__ + " (v. " + __version__ + ")")
 
+        self.settings = QtCore.QSettings(os.path.join(appDataPath, "settings.ini"), QtCore.QSettings.IniFormat)
+        self.settings.setIniCodec("UTF-8")
+
         self.clip = QtGui.QClipboard()
         self.adTree.itemClicked.connect(self.adTreeItemClicked)
 
-        self.pasteFIO.clicked.connect(self.pasteFIOClicked)
-        self.pasteF.clicked.connect(self.pasteFClicked)
-        self.pasteI.clicked.connect(self.pasteIClicked)
-        self.pasteO.clicked.connect(self.pasteOClicked)
+        self.buttonPasteFIO.clicked.connect(self.buttonPasteFIOClicked)
+        self.buttonPasteF.clicked.connect(self.buttonPasteFClicked)
+        self.buttonPasteI.clicked.connect(self.buttonPasteIClicked)
+        self.buttonPasteO.clicked.connect(self.buttonPasteOClicked)
 
-        self.genLogins.clicked.connect(self.genLoginsClicked)
-        self.copyLogins.clicked.connect(self.copySelectedToClipboard)
+        self.loginTemplate.textEdited.connect(self.loginTemplateEmitted)
+        self.passwordMask.textEdited.connect(self.passwordMaskEmitted)
 
-        self.connectToAD.clicked.connect(self.connectToADClicked)
+        self.buttonGenLogins.clicked.connect(self.buttonGenLoginsClicked)
+        self.buttonCopyLogins.clicked.connect(self.copySelectedToClipboard)
+        self.lineEditAttribute.textEdited.connect(self.lineEditAttributeEmitted)
+        self.comboBoxAttributes.activated.connect(self.comboBoxAttributesActivated)
+
+        self.buttonConnectToAD.clicked.connect(self.buttonConnectToADClicked)
         self.createAccounts.clicked.connect(self.createADAccounts)
 
-        self.connectToAD.hide()
+        self.buttonConnectToAD.hide()
         self.adServer.hide()
         self.adUser.hide()
         self.adPassword.hide()
 
-        self.connectToADClicked()
+        self.buttonConnectToADClicked()
+
+        self.initSettings()
 
 
+    def initSettings(self):
+        for key in self.commonAttributes.keys():
+            self.comboBoxAttributes.addItems([key])
 
-    def connectToADClicked(self):
+        if not self.settings.value("templLogin"):
+            self.settings.setValue("templLogin", "f_i1o1")
+        if not self.settings.value("templPassword"):
+            self.settings.setValue("templPassword", "!@#$##$#")
+
+        self.loginTemplate.setText(self.settings.value("templLogin"))
+        self.passwordMask.setText(self.settings.value("templPassword"))
+
+    def lineEditAttributeEmitted(self):
+        """Changes the value of an attribute variable. Marks a non-empty list item"""
+        key = self.comboBoxAttributes.currentText()
+        self.commonAttributes[key] = self.lineEditAttribute.text().strip()
+        if self.lineEditAttribute.text().strip() != "":
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap(":/icons/icons/edited.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        else:
+            icon = QtGui.QIcon()
+        self.comboBoxAttributes.setItemIcon(self.comboBoxAttributes.currentIndex(), icon)
+
+    def loginTemplateEmitted(self):
+        self.settings.setValue("templLogin", self.loginTemplate.text())
+
+    def passwordMaskEmitted(self):
+        self.settings.setValue("templPassword", self.passwordMask.text())
+
+    def comboBoxAttributesActivated(self):
+        key = self.comboBoxAttributes.currentText()
+        self.lineEditAttribute.setText(self.commonAttributes[key])
+
+
+    def buttonConnectToADClicked(self):
         try:
             adOUs = self.get_ad_tree()
             #adOUs = ["asd\\asdqw", """wqe\\q "weqe" """, "asd\\123ew", "asd\\123ew\\234"]
@@ -129,11 +177,11 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         self.createAccounts.setDisabled(True)
         if self.adPathList:
             self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format("/".join(self.adPathListReversed)))
-            for i in range(0, self.loginsTable.rowCount()):
+            for i in range(0, self.tableLogins.rowCount()):
 
-                displayName = self.loginsTable.item(i, 0).text().strip()
-                login = self.loginsTable.item(i, 1).text().strip()
-                password = self.loginsTable.item(i, 2).text().strip()
+                displayName = self.tableLogins.item(i, 0).text().strip()
+                login = self.tableLogins.item(i, 1).text().strip()
+                password = self.tableLogins.item(i, 2).text().strip()
 
                 domain = "DC=" + ",DC=".join(self.domainList)
                 container = "OU=" + ",OU=".join(self.adPathList) + "," + domain
@@ -149,20 +197,25 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
     def add_user_to_ad(self, displayName, login, password, container):
         ou = utilities.get_container_from_dn(container)
-
+        """
         if self.descriptionLineEdit.text().strip() != "":
             description = self.descriptionLineEdit.text()
         else:
             description = ""
+        """
+        commonAttributes = {
+                             "displayName": displayName,
+                             "sAMAccountName": login,
+                             "userPrincipalName": login + "@" + ".".join(self.domainList),
+                           }
+
+        for key in self.commonAttributes:
+            if self.commonAttributes[key].strip() != "":
+                commonAttributes[key] = self.commonAttributes[key].strip()
+
         try:
-            user = pyad.aduser.ADUser.create(displayName, ou, password=password,
-                                             optional_attributes={
-                                                 "displayName": displayName,
-                                                 "sAMAccountName": login,
-                                                 "userPrincipalName": login + "@" + ".".join(self.domainList),
-                                                 "description": description
-                                              })
-            if self.notExpiredPassCheckBox.isChecked():
+            user = pyad.aduser.ADUser.create(displayName, ou, password=password, optional_attributes=commonAttributes)
+            if self.checkboxNotExpiredPass.isChecked():
                 user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
             if self.disabledCheckBox.isChecked():
                 pyad.adobject.ADObject.disable(user)
@@ -231,43 +284,43 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             items.append(entry) if entry.text(0) not in items_text else None
         return items
 
-    def pasteFClicked(self):
+    def buttonPasteFClicked(self):
         clipboard = self.clip.text().splitlines()
 
         row = 0
         for f in clipboard:
             f = f.strip()
-            if row >= self.namesTable.rowCount():
-                self.namesTable.insertRow(row)
-            self.namesTable.setItem(row, 0, QtWidgets.QTableWidgetItem(f))
+            if row >= self.tableNames.rowCount():
+                self.tableNames.insertRow(row)
+            self.tableNames.setItem(row, 0, QtWidgets.QTableWidgetItem(f))
             row += 1
 
-    def pasteIClicked(self):
+    def buttonPasteIClicked(self):
         clipboard = self.clip.text().splitlines()
 
         row = 0
         for f in clipboard:
             f = f.strip()
-            if row >= self.namesTable.rowCount():
-                self.namesTable.insertRow(row)
-            self.namesTable.setItem(row, 1, QtWidgets.QTableWidgetItem(f))
+            if row >= self.tableNames.rowCount():
+                self.tableNames.insertRow(row)
+            self.tableNames.setItem(row, 1, QtWidgets.QTableWidgetItem(f))
             row += 1
 
-    def pasteOClicked(self):
+    def buttonPasteOClicked(self):
         clipboard = self.clip.text().splitlines()
 
         row = 0
         for f in clipboard:
             f = f.strip()
-            if row >= self.namesTable.rowCount():
-                self.namesTable.insertRow(row)
-            self.namesTable.setItem(row, 2, QtWidgets.QTableWidgetItem(f))
+            if row >= self.tableNames.rowCount():
+                self.tableNames.insertRow(row)
+            self.tableNames.setItem(row, 2, QtWidgets.QTableWidgetItem(f))
             row += 1
 
-    def pasteFIOClicked(self):
+    def buttonPasteFIOClicked(self):
         """Fills FIO table from clipboard"""
         clipboard = self.clip.text().splitlines()
-        self.namesTable.setRowCount(0)
+        self.tableNames.setRowCount(0)
 
         for fio in clipboard:
             try:
@@ -275,30 +328,30 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             except:
                 pass
             else:
-                row = self.namesTable.rowCount()
-                self.namesTable.insertRow(row)
+                row = self.tableNames.rowCount()
+                self.tableNames.insertRow(row)
 
                 for n in range(1, len(fioSplitted)+1):
                     t = fioSplitted[n-1].strip()
-                    self.namesTable.setItem(row, n-1, QtWidgets.QTableWidgetItem(t))
+                    self.tableNames.setItem(row, n-1, QtWidgets.QTableWidgetItem(t))
 
-    def genLoginsClicked(self):
-        self.loginsTable.setRowCount(0)
-        for fioRow in range(0, self.namesTable.rowCount()):
-            row = self.loginsTable.rowCount()
-            self.loginsTable.insertRow(row)
+    def buttonGenLoginsClicked(self):
+        self.tableLogins.setRowCount(0)
+        for fioRow in range(0, self.tableNames.rowCount()):
+            row = self.tableLogins.rowCount()
+            self.tableLogins.insertRow(row)
 
-            f = self.namesTable.item(fioRow, 0).text()
-            i = self.namesTable.item(fioRow, 1).text()
-            o = self.namesTable.item(fioRow, 2).text()
+            f = self.tableNames.item(fioRow, 0).text()
+            i = self.tableNames.item(fioRow, 1).text()
+            o = self.tableNames.item(fioRow, 2).text()
             fio = "{} {} {}".format(f,i,o)
             password = self.password_templating()
 
             login = self.login_templating(f,i,o)[:24]
 
-            self.loginsTable.setItem(row, 0, QtWidgets.QTableWidgetItem(fio))
-            self.loginsTable.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
-            self.loginsTable.setItem(row, 2, QtWidgets.QTableWidgetItem(password))
+            self.tableLogins.setItem(row, 0, QtWidgets.QTableWidgetItem(fio))
+            self.tableLogins.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
+            self.tableLogins.setItem(row, 2, QtWidgets.QTableWidgetItem(password))
 
 
 
@@ -349,8 +402,8 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
     def copySelectedToClipboard(self):
         """Sends selected rows to clipboard as tab-separated text"""
-        self.loginsTable.selectAll()
-        rows = utilities.get_selected_rows_from_qtablewidget(self.loginsTable)
+        self.tableLogins.selectAll()
+        rows = utilities.get_selected_rows_from_qtablewidget(self.tableLogins)
         strings = []
         for row in rows:
             textRow = []

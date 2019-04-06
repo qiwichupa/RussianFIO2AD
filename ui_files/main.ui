@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1103</width>
+    <width>1120</width>
     <height>633</height>
    </rect>
   </property>
@@ -65,35 +65,35 @@
            <number>1</number>
           </property>
           <item row="0" column="0">
-           <widget class="QPushButton" name="pasteFIO">
+           <widget class="QPushButton" name="buttonPasteFIO">
             <property name="text">
              <string>Вставить ФИО</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QPushButton" name="pasteF">
+           <widget class="QPushButton" name="buttonPasteF">
             <property name="text">
              <string>Только Ф</string>
             </property>
            </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QPushButton" name="pasteI">
+           <widget class="QPushButton" name="buttonPasteI">
             <property name="text">
              <string>Только И</string>
             </property>
            </widget>
           </item>
           <item row="0" column="3">
-           <widget class="QPushButton" name="pasteO">
+           <widget class="QPushButton" name="buttonPasteO">
             <property name="text">
              <string>Только О</string>
             </property>
            </widget>
           </item>
           <item row="1" column="0" colspan="4">
-           <widget class="QTableWidget" name="namesTable">
+           <widget class="QTableWidget" name="tableNames">
             <property name="selectionBehavior">
              <enum>QAbstractItemView::SelectRows</enum>
             </property>
@@ -187,7 +187,7 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;f&lt;/span&gt; - фамилия&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;i&lt;/span&gt; - имя&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;o&lt;/span&gt; - отчество&lt;br/&gt;&lt;br/&gt;Используйте цифры, например:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;i2&lt;/span&gt; - две первых буквы имени (транслитерированного)&lt;br/&gt;&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;f_i1o1&lt;/span&gt; - Ivanov_II&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>f_i1o1</string>
+             <string/>
             </property>
             <property name="placeholderText">
              <string/>
@@ -200,12 +200,12 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;! - БОЛЬШАЯ БУКВА&lt;br/&gt;@ - маленькая буква&lt;br/&gt;# - цифра&lt;br/&gt;$ - знак пунктуации&lt;br/&gt;&lt;br/&gt;Например:&lt;br/&gt;!@###$### - Rd834)214&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>!@######</string>
+             <string/>
             </property>
            </widget>
           </item>
           <item row="5" column="1">
-           <widget class="QPushButton" name="genLogins">
+           <widget class="QPushButton" name="buttonGenLogins">
             <property name="text">
              <string>Генерировать</string>
             </property>
@@ -219,7 +219,7 @@
            </widget>
           </item>
           <item row="1" column="1" colspan="3">
-           <widget class="QTableWidget" name="loginsTable">
+           <widget class="QTableWidget" name="tableLogins">
             <property name="selectionBehavior">
              <enum>QAbstractItemView::SelectRows</enum>
             </property>
@@ -255,34 +255,44 @@
             </column>
            </widget>
           </item>
-          <item row="5" column="3">
-           <widget class="QPushButton" name="copyLogins">
+          <item row="3" column="1">
+           <widget class="QCheckBox" name="checkboxNotExpiredPass">
             <property name="text">
-             <string>Скопировать всё</string>
+             <string>Not Expired Pass</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="3" column="3">
+          <item row="3" column="2">
            <widget class="QCheckBox" name="disabledCheckBox">
             <property name="text">
              <string>Disabled</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
-           <widget class="QLineEdit" name="descriptionLineEdit">
+          <item row="2" column="3">
+           <widget class="QLineEdit" name="lineEditAttribute">
             <property name="placeholderText">
-             <string>Description</string>
+             <string/>
             </property>
            </widget>
           </item>
-          <item row="3" column="2">
-           <widget class="QCheckBox" name="notExpiredPassCheckBox">
+          <item row="2" column="2">
+           <widget class="QComboBox" name="comboBoxAttributes"/>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>Not Expired Pass</string>
+             <string>Общие аттрибуты:</string>
             </property>
-            <property name="checked">
-             <bool>true</bool>
+           </widget>
+          </item>
+          <item row="5" column="3">
+           <widget class="QPushButton" name="buttonCopyLogins">
+            <property name="text">
+             <string>Скопировать всё</string>
             </property>
            </widget>
           </item>
@@ -344,7 +354,7 @@
            </widget>
           </item>
           <item row="0" column="0" colspan="3">
-           <widget class="QPushButton" name="connectToAD">
+           <widget class="QPushButton" name="buttonConnectToAD">
             <property name="text">
              <string>Соединиться с AD по-умолчанию, или:</string>
             </property>
@@ -380,8 +390,8 @@
              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Homepage: &lt;a href=&quot;https://github.com/qiwichupa/RussianFIO2AD&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;github.com&lt;/span&gt;&lt;/a&gt;&lt;br /&gt;Icon by &lt;a href=&quot;https://www.freepik.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Freepik&lt;/span&gt;&lt;/a&gt; from &lt;a href=&quot;https://www.flaticon.com/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;www.flaticon.com&lt;/span&gt;&lt;/a&gt; is licensed by &lt;a href=&quot;http://creativecommons.org/licenses/by/3.0/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;CC 3.0 BY&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Homepage: &lt;/span&gt;&lt;a href=&quot;https://github.com/qiwichupa/RussianFIO2AD&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/qiwichupa/RussianFIO2AD&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;br /&gt;Icons by &lt;/span&gt;&lt;a href=&quot;https://www.freepik.com/&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;Freepik&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;a href=&quot;https://www.flaticon.com/authors/prettycons&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;prettycons&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt; from &lt;/span&gt;&lt;a href=&quot;https://www.flaticon.com/&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;www.flaticon.com&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt; is licensed by &lt;/span&gt;&lt;a href=&quot;http://creativecommons.org/licenses/by/3.0/&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;CC 3.0 BY&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -394,6 +404,30 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>buttonPasteFIO</tabstop>
+  <tabstop>buttonPasteF</tabstop>
+  <tabstop>buttonPasteI</tabstop>
+  <tabstop>buttonPasteO</tabstop>
+  <tabstop>tableNames</tabstop>
+  <tabstop>loginPrefix</tabstop>
+  <tabstop>loginTemplate</tabstop>
+  <tabstop>passwordMask</tabstop>
+  <tabstop>tableLogins</tabstop>
+  <tabstop>comboBoxAttributes</tabstop>
+  <tabstop>lineEditAttribute</tabstop>
+  <tabstop>checkboxNotExpiredPass</tabstop>
+  <tabstop>disabledCheckBox</tabstop>
+  <tabstop>buttonGenLogins</tabstop>
+  <tabstop>buttonCopyLogins</tabstop>
+  <tabstop>buttonConnectToAD</tabstop>
+  <tabstop>adServer</tabstop>
+  <tabstop>adUser</tabstop>
+  <tabstop>adPassword</tabstop>
+  <tabstop>createAccounts</tabstop>
+  <tabstop>adTree</tabstop>
+  <tabstop>logBrowser</tabstop>
+ </tabstops>
  <resources>
   <include location="icons.qrc"/>
  </resources>
