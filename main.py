@@ -67,11 +67,8 @@ except:
 
 
 class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
-    commonAttributes = {
-        "description": "",
-        "company": "",
-        "department": ""
-        }
+
+    commonAttributes = {}
 
     def __init__(self, parent=None):
         QtWidgets.QDialog.__init__(self)
@@ -112,13 +109,16 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
 
     def initSettings(self):
-        for key in self.commonAttributes.keys():
-            self.comboBoxAttributes.addItems([key])
-
         if not self.settings.value("templLogin"):
             self.settings.setValue("templLogin", "f_i1o1")
         if not self.settings.value("templPassword"):
             self.settings.setValue("templPassword", "!@#$##$#")
+        if not self.settings.value("commonAttributes"):
+            self.settings.setValue("commonAttributes", "description,company,department")
+
+        for key in self.settings.value("commonAttributes").split(","):
+            self.commonAttributes[key] = ""
+            self.comboBoxAttributes.addItems([key])
 
         self.loginTemplate.setText(self.settings.value("templLogin"))
         self.passwordMask.setText(self.settings.value("templPassword"))
@@ -181,48 +181,36 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             container = utilities.get_container_from_dn(ou)
 
             self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format("/".join(self.adPathListReversed)))
+            users = []
             for i in range(0, self.tableLogins.rowCount()):
 
                 displayName = self.tableLogins.item(i, 0).text().strip()
                 login = self.tableLogins.item(i, 1).text().strip()
                 password = self.tableLogins.item(i, 2).text().strip()
-
+                """
                 if displayName != "" and login != "" and password != "":
                     self.add_user_to_ad(displayName,login,password,container)
                 else:
                     self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
+                """
+                if displayName != "" and login != "" and password != "":
+                    users += [{"displayName": displayName, "login": login, "password": password}]
+                else:
+                    self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
 
-        self.createAccounts.setEnabled(True)
+            self.createUsersThread = CreateAdUsers(container,
+                                                   self.domainList,
+                                                   users,
+                                                   self.commonAttributes,
+                                                   self.checkboxNotExpiredPass.isChecked(),
+                                                   self.disabledCheckBox.isChecked()
+                                                   )
+            self.createUsersThread.textToLog.connect(self.logBrowser.append)
+            self.createUsersThread.finished.connect(self.createAccounts.setEnabled(True))
+            self.createUsersThread.run()
 
+        #self.createAccounts.setEnabled(True)
 
-    def add_user_to_ad(self, displayName, login, password, container):
-        ou = container
-        """
-        if self.descriptionLineEdit.text().strip() != "":
-            description = self.descriptionLineEdit.text()
-        else:
-            description = ""
-        """
-        commonAttributes = {
-                             "displayName": displayName,
-                             "sAMAccountName": login,
-                             "userPrincipalName": login + "@" + ".".join(self.domainList),
-                           }
-
-        for key in self.commonAttributes:
-            if self.commonAttributes[key].strip() != "":
-                commonAttributes[key] = self.commonAttributes[key].strip()
-
-        try:
-            user = pyad.aduser.ADUser.create(displayName, ou, password=password, optional_attributes=commonAttributes)
-            if self.checkboxNotExpiredPass.isChecked():
-                user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
-            if self.disabledCheckBox.isChecked():
-                pyad.adobject.ADObject.disable(user)
-        except Exception as e:
-            self.logBrowser.append("""\nError: {}({}: {}, {})\n """.format(str(e), displayName, login, password))
-        else:
-            self.logBrowser.append("""{}: {}, {} """.format(displayName, login, password))
 
     def get_ad_tree(self):
         try:
@@ -413,6 +401,60 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         result = "\n".join(strings)
         self.clip.setText(result)
 
+class CreateAdUsers(QtCore.QThread):
+    textToLog = QtCore.Signal(str)
+
+    def __init__(self, container, domainList, users, commonAttributes, notExpiredPass, disabledAccount, parent=None):
+        QtCore.QThread.__init__(self)
+
+        self.container = container
+        self.domainList = domainList
+        self.users = users
+        self.commonAttributes = commonAttributes
+        self.notExpiredPass = notExpiredPass
+        self.disabledAccount = disabledAccount
+
+    def run(self):
+        self.createADAccounts()
+
+    def createADAccounts(self):
+        for user in self.users:
+
+            displayName = user["displayName"]
+            login = user["login"]
+            password = user["password"]
+            self.add_user_to_ad(displayName,login,password,self.container)
+
+
+
+    def add_user_to_ad(self, displayName, login, password, container):
+        ou = container
+        """
+        if self.descriptionLineEdit.text().strip() != "":
+            description = self.descriptionLineEdit.text()
+        else:
+            description = ""
+        """
+        commonAttributes = {
+                             "displayName": displayName,
+                             "sAMAccountName": login,
+                             "userPrincipalName": login + "@" + ".".join(self.domainList),
+                           }
+
+        for key in self.commonAttributes:
+            if self.commonAttributes[key].strip() != "":
+                commonAttributes[key] = self.commonAttributes[key].strip()
+
+        try:
+            user = pyad.aduser.ADUser.create(displayName, ou, password=password, optional_attributes=commonAttributes)
+            if self.notExpiredPass:
+                user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
+            if self.disabledAccount:
+                pyad.adobject.ADObject.disable(user)
+        except Exception as e:
+            self.textToLog.emit("""\nError: {}({}: {}, {})\n """.format(str(e), displayName, login, password))
+        else:
+            self.textToLog.emit("""{}: {}, {} """.format(displayName, login, password))
 
 def unhandled_exception(exc_type, exc_value, exc_traceback):
     logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))

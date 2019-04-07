@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file './main.ui',
 # licensing of './main.ui' applies.
 #
-# Created: Sat Apr  6 12:01:25 2019
+# Created: Sun Apr  7 11:19:06 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(1103, 633)
+        Dialog.resize(1120, 633)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/icons/icons/main.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Dialog.setWindowIcon(icon)
@@ -90,10 +90,12 @@ class Ui_Dialog(object):
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.loginTemplate = QtWidgets.QLineEdit(self.frame)
+        self.loginTemplate.setText("")
         self.loginTemplate.setPlaceholderText("")
         self.loginTemplate.setObjectName("loginTemplate")
         self.gridLayout_2.addWidget(self.loginTemplate, 0, 2, 1, 1)
         self.passwordMask = QtWidgets.QLineEdit(self.frame)
+        self.passwordMask.setText("")
         self.passwordMask.setObjectName("passwordMask")
         self.gridLayout_2.addWidget(self.passwordMask, 0, 3, 1, 1)
         self.buttonGenLogins = QtWidgets.QPushButton(self.frame)
@@ -218,9 +220,7 @@ class Ui_Dialog(object):
         self.tableNames.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "Имя", None, -1))
         self.tableNames.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "Отчество", None, -1))
         self.loginTemplate.setToolTip(QtWidgets.QApplication.translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">f</span> - фамилия<br/><span style=\" font-weight:600;\">i</span> - имя<br/><span style=\" font-weight:600;\">o</span> - отчество<br/><br/>Используйте цифры, например:<br/><span style=\" font-weight:600;\">i2</span> - две первых буквы имени (транслитерированного)<br/><br/><span style=\" font-weight:600;\">f_i1o1</span> - Ivanov_II</p></body></html>", None, -1))
-        self.loginTemplate.setText(QtWidgets.QApplication.translate("Dialog", "f_i1o1", None, -1))
         self.passwordMask.setToolTip(QtWidgets.QApplication.translate("Dialog", "<html><head/><body><p>! - БОЛЬШАЯ БУКВА<br/>@ - маленькая буква<br/># - цифра<br/>$ - знак пунктуации<br/><br/>Например:<br/>!@###$### - Rd834)214</p></body></html>", None, -1))
-        self.passwordMask.setText(QtWidgets.QApplication.translate("Dialog", "!@######", None, -1))
         self.buttonGenLogins.setText(QtWidgets.QApplication.translate("Dialog", "Генерировать", None, -1))
         self.loginPrefix.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "Префикс логина", None, -1))
         self.tableLogins.horizontalHeaderItem(0).setText(QtWidgets.QApplication.translate("Dialog", "DisplayName", None, -1))
@@ -238,7 +238,7 @@ class Ui_Dialog(object):
         self.label.setText(QtWidgets.QApplication.translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Sans Serif\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Homepage: <a href=\"https://github.com/qiwichupa/RussianFIO2AD\"><span style=\" text-decoration: underline; color:#0000ff;\">github.com</span></a><br />Icon by <a href=\"https://www.freepik.com/\"><span style=\" text-decoration: underline; color:#0000ff;\">Freepik</span></a> from <a href=\"https://www.flaticon.com/\"><span style=\" text-decoration: underline; color:#0000ff;\">www.flaticon.com</span></a> is licensed by <a href=\"http://creativecommons.org/licenses/by/3.0/\"><span style=\" text-decoration: underline; color:#0000ff;\">CC 3.0 BY</span></a></p></body></html>", None, -1))
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\">Homepage: </span><a href=\"https://github.com/qiwichupa/RussianFIO2AD\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; text-decoration: underline; color:#0000ff;\">https://github.com/qiwichupa/RussianFIO2AD</span></a><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\"><br />Icons by </span><a href=\"https://www.freepik.com/\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; text-decoration: underline; color:#0000ff;\">Freepik</span></a><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\">, </span><a href=\"https://www.flaticon.com/authors/prettycons\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; text-decoration: underline; color:#0000ff;\">prettycons</span></a><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\"> from </span><a href=\"https://www.flaticon.com/\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; text-decoration: underline; color:#0000ff;\">www.flaticon.com</span></a><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\"> is licensed by </span><a href=\"http://creativecommons.org/licenses/by/3.0/\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; text-decoration: underline; color:#0000ff;\">CC 3.0 BY</span></a></p></body></html>", None, -1))
 
 import icons_rc
