@@ -96,7 +96,7 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         self.comboBoxAttributes.activated.connect(self.comboBoxAttributesActivated)
 
         self.buttonConnectToAD.clicked.connect(self.buttonConnectToADClicked)
-        self.createAccounts.clicked.connect(self.createADAccounts)
+        self.buttonCreateAccounts.clicked.connect(self.createADAccounts)
 
         self.buttonConnectToAD.hide()
         self.adServer.hide()
@@ -144,7 +144,6 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         key = self.comboBoxAttributes.currentText()
         self.lineEditAttribute.setText(self.commonAttributes[key])
 
-
     def buttonConnectToADClicked(self):
         try:
             adOUs = self.get_ad_tree()
@@ -155,11 +154,10 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             list = self.tree_widget_list(adOUs)
             self.adTree.insertTopLevelItems(0, list)
 
-
     def adTreeItemClicked(self):
         item = self.adTree.selectedItems()
         if item:
-            self.createAccounts.setEnabled(True)
+            self.buttonCreateAccounts.setEnabled(True)
             selectedText = item[0].text(0)
 
             parents = []
@@ -168,17 +166,17 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                     index = index.parent()
                     parents = [index.sibling(index.row(), 0).data()] + parents
 
-
             self.adPathListReversed = parents + [selectedText]
             self.adPathList = list(reversed(self.adPathListReversed))
             self.adTree.setHeaderLabel("/".join(self.adPathListReversed))
 
     def createADAccounts(self):
-        self.createAccounts.setDisabled(True)
+        self.buttonCreateAccounts.setDisabled(True)
         if self.adPathList:
             domain = "DC=" + ",DC=".join(self.domainList)
-            ou = "OU=" + ",OU=".join(self.adPathList) + "," + domain
-            container = utilities.get_container_from_dn(ou)
+            organizationUnitDN = "OU=" + ",OU=".join(self.adPathList) + "," + domain
+            container = utilities.get_container_from_dn(organizationUnitDN)
+
 
             self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format("/".join(self.adPathListReversed)))
             users = []
@@ -187,30 +185,36 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                 displayName = self.tableLogins.item(i, 0).text().strip()
                 login = self.tableLogins.item(i, 1).text().strip()
                 password = self.tableLogins.item(i, 2).text().strip()
-                """
-                if displayName != "" and login != "" and password != "":
-                    self.add_user_to_ad(displayName,login,password,container)
-                else:
-                    self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
-                """
+
                 if displayName != "" and login != "" and password != "":
                     users += [{"displayName": displayName, "login": login, "password": password}]
+                    self.add_user_to_ad(displayName, login, password, container)
                 else:
                     self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
 
-            self.createUsersThread = CreateAdUsers(container,
-                                                   self.domainList,
-                                                   users,
-                                                   self.commonAttributes,
-                                                   self.checkboxNotExpiredPass.isChecked(),
-                                                   self.disabledCheckBox.isChecked()
-                                                   )
-            self.createUsersThread.textToLog.connect(self.logBrowser.append)
-            self.createUsersThread.finished.connect(self.createAccounts.setEnabled(True))
-            self.createUsersThread.run()
+            self.buttonCreateAccounts.setEnabled(True)
 
-        #self.createAccounts.setEnabled(True)
+    def add_user_to_ad(self, displayName, login, password, container):
+        commonAttributes = {
+                             "displayName": displayName,
+                             "sAMAccountName": login,
+                             "userPrincipalName": login + "@" + ".".join(self.domainList),
+                           }
 
+        for key in self.commonAttributes:
+            if self.commonAttributes[key].strip() != "":
+                commonAttributes[key] = self.commonAttributes[key].strip()
+
+        try:
+            user = pyad.aduser.ADUser.create(displayName, container, password=password, optional_attributes=commonAttributes)
+            if self.checkboxNotExpiredPass.isChecked():
+                user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
+            if self.checkboxDisabled.isChecked():
+                pyad.adobject.ADObject.disable(user)
+        except Exception as e:
+            self.logBrowser.append("""\nError: {}({}: {}, {})\n """.format(str(e), displayName, login, password))
+        else:
+            self.logBrowser.append("""{}: {}, {} """.format(displayName, login, password))
 
     def get_ad_tree(self):
         try:
@@ -341,8 +345,6 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             self.tableLogins.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
             self.tableLogins.setItem(row, 2, QtWidgets.QTableWidgetItem(password))
 
-
-
     def split_fio(self, fio):
         """Returns splitted FIO if string can be splitted"""
         result = fio.strip().split("\t", maxsplit=3)
@@ -400,61 +402,6 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
             strings += ["\t".join(textRow)]
         result = "\n".join(strings)
         self.clip.setText(result)
-
-class CreateAdUsers(QtCore.QThread):
-    textToLog = QtCore.Signal(str)
-
-    def __init__(self, container, domainList, users, commonAttributes, notExpiredPass, disabledAccount, parent=None):
-        QtCore.QThread.__init__(self)
-
-        self.container = container
-        self.domainList = domainList
-        self.users = users
-        self.commonAttributes = commonAttributes
-        self.notExpiredPass = notExpiredPass
-        self.disabledAccount = disabledAccount
-
-    def run(self):
-        self.createADAccounts()
-
-    def createADAccounts(self):
-        for user in self.users:
-
-            displayName = user["displayName"]
-            login = user["login"]
-            password = user["password"]
-            self.add_user_to_ad(displayName,login,password,self.container)
-
-
-
-    def add_user_to_ad(self, displayName, login, password, container):
-        ou = container
-        """
-        if self.descriptionLineEdit.text().strip() != "":
-            description = self.descriptionLineEdit.text()
-        else:
-            description = ""
-        """
-        commonAttributes = {
-                             "displayName": displayName,
-                             "sAMAccountName": login,
-                             "userPrincipalName": login + "@" + ".".join(self.domainList),
-                           }
-
-        for key in self.commonAttributes:
-            if self.commonAttributes[key].strip() != "":
-                commonAttributes[key] = self.commonAttributes[key].strip()
-
-        try:
-            user = pyad.aduser.ADUser.create(displayName, ou, password=password, optional_attributes=commonAttributes)
-            if self.notExpiredPass:
-                user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
-            if self.disabledAccount:
-                pyad.adobject.ADObject.disable(user)
-        except Exception as e:
-            self.textToLog.emit("""\nError: {}({}: {}, {})\n """.format(str(e), displayName, login, password))
-        else:
-            self.textToLog.emit("""{}: {}, {} """.format(displayName, login, password))
 
 def unhandled_exception(exc_type, exc_value, exc_traceback):
     logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))

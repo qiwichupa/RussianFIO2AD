@@ -266,7 +266,7 @@
            </widget>
           </item>
           <item row="3" column="2">
-           <widget class="QCheckBox" name="disabledCheckBox">
+           <widget class="QCheckBox" name="checkboxDisabled">
             <property name="text">
              <string>Disabled</string>
             </property>
@@ -361,7 +361,7 @@
            </widget>
           </item>
           <item row="2" column="0" colspan="3">
-           <widget class="QPushButton" name="createAccounts">
+           <widget class="QPushButton" name="buttonCreateAccounts">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -417,14 +417,14 @@ p, li { white-space: pre-wrap; }
   <tabstop>comboBoxAttributes</tabstop>
   <tabstop>lineEditAttribute</tabstop>
   <tabstop>checkboxNotExpiredPass</tabstop>
-  <tabstop>disabledCheckBox</tabstop>
+  <tabstop>checkboxDisabled</tabstop>
   <tabstop>buttonGenLogins</tabstop>
   <tabstop>buttonCopyLogins</tabstop>
   <tabstop>buttonConnectToAD</tabstop>
   <tabstop>adServer</tabstop>
   <tabstop>adUser</tabstop>
   <tabstop>adPassword</tabstop>
-  <tabstop>createAccounts</tabstop>
+  <tabstop>buttonCreateAccounts</tabstop>
   <tabstop>adTree</tabstop>
   <tabstop>logBrowser</tabstop>
  </tabstops>

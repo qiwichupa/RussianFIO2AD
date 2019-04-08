@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file './main.ui',
 # licensing of './main.ui' applies.
 #
-# Created: Sun Apr  7 11:19:06 2019
+# Created: Mon Apr  8 12:22:19 2019
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -125,9 +125,9 @@ class Ui_Dialog(object):
         self.checkboxNotExpiredPass.setChecked(True)
         self.checkboxNotExpiredPass.setObjectName("checkboxNotExpiredPass")
         self.gridLayout_2.addWidget(self.checkboxNotExpiredPass, 3, 1, 1, 1)
-        self.disabledCheckBox = QtWidgets.QCheckBox(self.frame)
-        self.disabledCheckBox.setObjectName("disabledCheckBox")
-        self.gridLayout_2.addWidget(self.disabledCheckBox, 3, 2, 1, 1)
+        self.checkboxDisabled = QtWidgets.QCheckBox(self.frame)
+        self.checkboxDisabled.setObjectName("checkboxDisabled")
+        self.gridLayout_2.addWidget(self.checkboxDisabled, 3, 2, 1, 1)
         self.lineEditAttribute = QtWidgets.QLineEdit(self.frame)
         self.lineEditAttribute.setPlaceholderText("")
         self.lineEditAttribute.setObjectName("lineEditAttribute")
@@ -169,10 +169,10 @@ class Ui_Dialog(object):
         self.buttonConnectToAD = QtWidgets.QPushButton(self.frame_3)
         self.buttonConnectToAD.setObjectName("buttonConnectToAD")
         self.gridLayout_4.addWidget(self.buttonConnectToAD, 0, 0, 1, 3)
-        self.createAccounts = QtWidgets.QPushButton(self.frame_3)
-        self.createAccounts.setEnabled(False)
-        self.createAccounts.setObjectName("createAccounts")
-        self.gridLayout_4.addWidget(self.createAccounts, 2, 0, 1, 3)
+        self.buttonCreateAccounts = QtWidgets.QPushButton(self.frame_3)
+        self.buttonCreateAccounts.setEnabled(False)
+        self.buttonCreateAccounts.setObjectName("buttonCreateAccounts")
+        self.gridLayout_4.addWidget(self.buttonCreateAccounts, 2, 0, 1, 3)
         self.adServer = QtWidgets.QLineEdit(self.frame_3)
         self.adServer.setObjectName("adServer")
         self.gridLayout_4.addWidget(self.adServer, 1, 0, 1, 1)
@@ -199,15 +199,15 @@ class Ui_Dialog(object):
         Dialog.setTabOrder(self.tableLogins, self.comboBoxAttributes)
         Dialog.setTabOrder(self.comboBoxAttributes, self.lineEditAttribute)
         Dialog.setTabOrder(self.lineEditAttribute, self.checkboxNotExpiredPass)
-        Dialog.setTabOrder(self.checkboxNotExpiredPass, self.disabledCheckBox)
-        Dialog.setTabOrder(self.disabledCheckBox, self.buttonGenLogins)
+        Dialog.setTabOrder(self.checkboxNotExpiredPass, self.checkboxDisabled)
+        Dialog.setTabOrder(self.checkboxDisabled, self.buttonGenLogins)
         Dialog.setTabOrder(self.buttonGenLogins, self.buttonCopyLogins)
         Dialog.setTabOrder(self.buttonCopyLogins, self.buttonConnectToAD)
         Dialog.setTabOrder(self.buttonConnectToAD, self.adServer)
         Dialog.setTabOrder(self.adServer, self.adUser)
         Dialog.setTabOrder(self.adUser, self.adPassword)
-        Dialog.setTabOrder(self.adPassword, self.createAccounts)
-        Dialog.setTabOrder(self.createAccounts, self.adTree)
+        Dialog.setTabOrder(self.adPassword, self.buttonCreateAccounts)
+        Dialog.setTabOrder(self.buttonCreateAccounts, self.adTree)
         Dialog.setTabOrder(self.adTree, self.logBrowser)
 
     def retranslateUi(self, Dialog):
@@ -227,13 +227,13 @@ class Ui_Dialog(object):
         self.tableLogins.horizontalHeaderItem(1).setText(QtWidgets.QApplication.translate("Dialog", "Login", None, -1))
         self.tableLogins.horizontalHeaderItem(2).setText(QtWidgets.QApplication.translate("Dialog", "Password", None, -1))
         self.checkboxNotExpiredPass.setText(QtWidgets.QApplication.translate("Dialog", "Not Expired Pass", None, -1))
-        self.disabledCheckBox.setText(QtWidgets.QApplication.translate("Dialog", "Disabled", None, -1))
+        self.checkboxDisabled.setText(QtWidgets.QApplication.translate("Dialog", "Disabled", None, -1))
         self.label_2.setText(QtWidgets.QApplication.translate("Dialog", "Общие аттрибуты:", None, -1))
         self.buttonCopyLogins.setText(QtWidgets.QApplication.translate("Dialog", "Скопировать всё", None, -1))
         self.adPassword.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "password", None, -1))
         self.adUser.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "user", None, -1))
         self.buttonConnectToAD.setText(QtWidgets.QApplication.translate("Dialog", "Соединиться с AD по-умолчанию, или:", None, -1))
-        self.createAccounts.setText(QtWidgets.QApplication.translate("Dialog", "Создать аккаунты в:", None, -1))
+        self.buttonCreateAccounts.setText(QtWidgets.QApplication.translate("Dialog", "Создать аккаунты в:", None, -1))
         self.adServer.setPlaceholderText(QtWidgets.QApplication.translate("Dialog", "ad controller", None, -1))
         self.label.setText(QtWidgets.QApplication.translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
