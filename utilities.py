@@ -204,10 +204,11 @@ def get_container_from_dn(dn, rootcontainer=None):
         return None
 
     for c in children:
-        try:
-            container = get_container_from_dn(dn, rootcontainer=c)
-            if container is not None:
-                return container
-        except:
-            pass
+        if c.dn in dn:
+            try:
+                container = get_container_from_dn(dn, rootcontainer=c)
+                if container is not None:
+                    return container
+            except:
+                pass
 
