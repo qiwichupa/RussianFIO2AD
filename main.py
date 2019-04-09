@@ -19,7 +19,7 @@ from ui_files import pyMain
 
 
 __appname__ = "RussianFIO2AD"
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 
 # get path of program dir.
@@ -66,12 +66,13 @@ except:
     pass
 
 
-class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
+class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
 
     commonAttributes = {}
+    groups = {}
 
     def __init__(self, parent=None):
-        QtWidgets.QDialog.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
         self.setupUi(self)
 
         self.setWindowTitle(__appname__ + " (v. " + __version__ + ")")
@@ -92,8 +93,12 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
         self.buttonGenLogins.clicked.connect(self.buttonGenLoginsClicked)
         self.buttonCopyLogins.clicked.connect(self.copySelectedToClipboard)
+
         self.lineEditAttribute.textEdited.connect(self.lineEditAttributeEmitted)
         self.comboBoxAttributes.activated.connect(self.comboBoxAttributesActivated)
+
+        self.checkboxAddToGroup.stateChanged.connect(self.checkboxAddToGroupStateChanged)
+        self.comboboxGroups.activated.connect(self.comboboxGroupsActivated)
 
         self.buttonConnectToAD.clicked.connect(self.buttonConnectToADClicked)
         self.buttonCreateAccounts.clicked.connect(self.createADAccounts)
@@ -103,10 +108,9 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         self.adUser.hide()
         self.adPassword.hide()
 
-        self.buttonConnectToADClicked()
+        self.loadAdToUI()
 
         self.initSettings()
-
 
     def initSettings(self):
         if not self.settings.value("templLogin"):
@@ -122,6 +126,52 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
 
         self.loginTemplate.setText(self.settings.value("templLogin"))
         self.passwordMask.setText(self.settings.value("templPassword"))
+
+    def refreshADGroups(self):
+        q = pyad.adquery.ADQuery()
+
+        q.execute_query(
+            attributes=["distinguishedName", "cn"],
+            where_clause="objectClass = 'group'"
+            )
+
+        self.groups = {}
+        for group in q.get_results():
+            if "\\" not in group["distinguishedName"]:
+                cn = group["cn"]
+                dn = group["distinguishedName"]
+                self.groups[cn] = [dn, False]
+
+        for cn in sorted(self.groups.keys()):
+            self.comboboxGroups.addItems([cn])
+
+    def comboboxGroupsActivated(self):
+        cn = self.comboboxGroups.currentText()
+        self.checkboxAddToGroup.setChecked(self.groups[cn][1])
+
+    def checkboxAddToGroupStateChanged(self):
+        currentCN = self.comboboxGroups.currentText()
+
+        if self.checkboxAddToGroup.isChecked():
+            self.groups[currentCN][1] = True
+        else:
+            self.groups[currentCN][1] = False
+
+        # refresh list, selected on top
+        self.comboboxGroups.clear()
+        n=0
+        for cn in sorted(self.groups.keys()):
+            if self.groups[cn][1] == True:
+                icon = QtGui.QIcon()
+                icon.addPixmap(QtGui.QPixmap(":/icons/icons/edited.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                self.comboboxGroups.addItem(cn)
+                self.comboboxGroups.setItemIcon(n, icon)
+                n += 1
+        for cn in sorted(self.groups.keys()):
+            if self.groups[cn][1] == False:
+                self.comboboxGroups.addItem(cn)
+
+        self.comboboxGroups.setCurrentText(currentCN)
 
     def lineEditAttributeEmitted(self):
         """Changes the value of an attribute variable. Marks a non-empty list item"""
@@ -145,14 +195,18 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
         self.lineEditAttribute.setText(self.commonAttributes[key])
 
     def buttonConnectToADClicked(self):
+        pass
+
+    def loadAdToUI(self):
         try:
             adOUs = self.get_ad_tree()
-            #adOUs = ["asd\\asdqw", """wqe\\q "weqe" """, "asd\\123ew", "asd\\123ew\\234"]
         except Exception as e:
             print(str(e))
         else:
             list = self.tree_widget_list(adOUs)
             self.adTree.insertTopLevelItems(0, list)
+
+            self.refreshADGroups()
 
     def adTreeItemClicked(self):
         item = self.adTree.selectedItems()
@@ -211,6 +265,10 @@ class Main(QtWidgets.QDialog, pyMain.Ui_Dialog):
                 user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
             if self.checkboxDisabled.isChecked():
                 pyad.adobject.ADObject.disable(user)
+            for cn in self.groups.keys():
+                if self.groups[cn][1] == True:
+                    group = pyad.adgroup.ADGroup.from_dn(self.groups[cn][0])
+                    group.add_members([user])
         except Exception as e:
             self.logBrowser.append("""\nError: {}({}: {}, {})\n """.format(str(e), displayName, login, password))
         else:
