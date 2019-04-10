@@ -142,8 +142,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                 dn = group["distinguishedName"]
                 self.groups[cn] = [dn, False]
 
-        for cn in sorted(self.groups.keys()):
-            self.comboboxGroups.addItems([cn])
+        self.refreshComboboxGroups()
 
     def comboboxGroupsActivated(self):
         cn = self.comboboxGroups.currentText()
@@ -157,21 +156,25 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         else:
             self.groups[currentCN][1] = False
 
-        # refresh list, selected on top
+        self.refreshComboboxGroups()
+
+
+        self.comboboxGroups.setCurrentText(currentCN)
+
+    def refreshComboboxGroups(self):
         self.comboboxGroups.clear()
-        n=0
-        for cn in sorted(self.groups.keys()):
+        n = 0
+        for cn in sorted(self.groups.keys(), key=str.lower):
             if self.groups[cn][1] == True:
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap(":/icons/icons/edited.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 self.comboboxGroups.addItem(cn)
                 self.comboboxGroups.setItemIcon(n, icon)
                 n += 1
-        for cn in sorted(self.groups.keys()):
+        for cn in sorted(self.groups.keys(), key=str.lower):
             if self.groups[cn][1] == False:
                 self.comboboxGroups.addItem(cn)
 
-        self.comboboxGroups.setCurrentText(currentCN)
 
     def lineEditAttributeEmitted(self):
         """Changes the value of an attribute variable. Marks a non-empty list item"""
@@ -268,10 +271,15 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         except Exception as e:
             self.logBrowser.append("""Ошибка: {}({}: {}, {})\n """.format(str(e), displayName, password, str(container)))
             logger.warning("""Ошибка: {}({}: {}, {}) """.format(str(e), displayName, password, str(container)))
+            """
             try:
-                user.delete()
-            except:
+                userforremove = pyad.aduser.ADUser.from_dn("CN={},{}".format(displayName, container.dn))
+                userforremove.delete()
+                self.logBrowser.append("Удален: CN={},{}".format(displayName, container.dn))
+            except Exception as e:
+                self.logBrowser.append("Ошибка удаления: CN={},{}".format(displayName, container.dn))
                 pass
+            """
         else:
             self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
             logger.info("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
