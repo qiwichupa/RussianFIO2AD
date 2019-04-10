@@ -249,30 +249,58 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             self.buttonCreateAccounts.setEnabled(True)
 
     def add_user_to_ad(self, displayName, login, password, container):
-        commonAttributes = {
+        attributes = {
                              "displayName": displayName,
                              "sAMAccountName": login,
-                             "userPrincipalName": login + "@" + ".".join(self.domainList),
+                             "userPrincipalName": login + "@" + ".".join(self.domainList)
                            }
 
-        for key in self.commonAttributes:
+        for key in self.commonAttributes.keys():
             if self.commonAttributes[key].strip() != "":
-                commonAttributes[key] = self.commonAttributes[key].strip()
+                attributes[key] = self.commonAttributes[key].strip()
 
         try:
-            user = pyad.aduser.ADUser.create(displayName, container, password=password, optional_attributes=commonAttributes)
+            self.logBrowser.append("""\nСоздание: {} """.format(str(attributes)))
+            user = pyad.aduser.ADUser.create(displayName, container, password=password, optional_attributes=attributes)
+        except Exception as e:
+            self.logBrowser.append("""Ошибка: {}({}: {}, {})\n """.format(str(e), displayName, login, password))
+        else:
+            self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, login, password))
+
             if self.checkboxNotExpiredPass.isChecked():
-                user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
+                try:
+                    self.logBrowser.append("""Установка флага пароля "not expired" """)
+                    user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
+                except Exception as e:
+                    self.logBrowser.append("""Ошибка установки флага пароля "not expired": {}""".format(str(e)))
+                else:
+                    self.logBrowser.append("""Флаг установлен""")
             if self.checkboxDisabled.isChecked():
-                pyad.adobject.ADObject.disable(user)
+                try:
+                    self.logBrowser.append("""Установка флага пароля "disabled" """)
+                    pyad.adobject.ADObject.disable(user)
+                except Exception as e:
+                    self.logBrowser.append("""Ошибка установки флага "disabled": {}""".format(str(e)))
+                else:
+                    self.logBrowser.append("""Флаг установлен""")
             for cn in self.groups.keys():
                 if self.groups[cn][1] == True:
-                    group = pyad.adgroup.ADGroup.from_dn(self.groups[cn][0])
-                    group.add_members([user])
-        except Exception as e:
-            self.logBrowser.append("""\nError: {}({}: {}, {})\n """.format(str(e), displayName, login, password))
-        else:
-            self.logBrowser.append("""{}: {}, {} """.format(displayName, login, password))
+                    try:
+                        self.logBrowser.append("""Получение объекта группы: {}""".format(self.groups[cn][0]))
+                        group = pyad.adgroup.ADGroup.from_dn(self.groups[cn][0])
+                    except Exception as e:
+                        self.logBrowser.append("""Ошибка": {}""".format(str(e)))
+                    else:
+                        self.logBrowser.append("""Объект получен: {}""".format(str(group)))
+                        try:
+                            self.logBrowser.append("""Добавление учетной записи в группу""")
+                            group.add_members([user])
+                        except Exception as e:
+                            self.logBrowser.append("""Ошибка": {}""".format(str(e)))
+                        else:
+                            self.logBrowser.append("""Учетная запись добавлена в группу""")
+
+
 
     def get_ad_tree(self):
         try:
