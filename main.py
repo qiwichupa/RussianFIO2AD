@@ -19,7 +19,7 @@ from ui_files import pyMain
 
 
 __appname__ = "RussianFIO2AD"
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 
 # get path of program dir.
@@ -233,6 +233,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
 
 
             self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format("/".join(self.adPathListReversed)))
+            logger.info("""\n===================\nCreating in "{}"\n===================""".format("/".join(self.adPathListReversed)))
             users = []
             for i in range(0, self.tableLogins.rowCount()):
 
@@ -249,58 +250,64 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             self.buttonCreateAccounts.setEnabled(True)
 
     def add_user_to_ad(self, displayName, login, password, container):
-        attributes = {
+        basicAttributes = {
                              "displayName": displayName,
                              "sAMAccountName": login,
                              "userPrincipalName": login + "@" + ".".join(self.domainList)
                            }
 
+        optionalAttributes = {}
         for key in self.commonAttributes.keys():
             if self.commonAttributes[key].strip() != "":
-                attributes[key] = self.commonAttributes[key].strip()
+                optionalAttributes[key] = self.commonAttributes[key].strip()
 
+        attributes = {**basicAttributes, **optionalAttributes}
         try:
-            self.logBrowser.append("""\nСоздание: {} """.format(str(attributes)))
+            logger.info("""Создание: {} """.format(str(attributes)))
             user = pyad.aduser.ADUser.create(displayName, container, password=password, optional_attributes=attributes)
         except Exception as e:
-            self.logBrowser.append("""Ошибка: {}({}: {}, {})\n """.format(str(e), displayName, login, password))
+            self.logBrowser.append("""Ошибка: {}({}: {}, {})\n """.format(str(e), displayName, password, str(container)))
+            logger.warning("""Ошибка: {}({}: {}, {}) """.format(str(e), displayName, password, str(container)))
         else:
-            self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, login, password))
+            self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
+            logger.info("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
 
             if self.checkboxNotExpiredPass.isChecked():
                 try:
-                    self.logBrowser.append("""Установка флага пароля "not expired" """)
+                    logger.info("""Установка флага пароля "not expired" """)
                     user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
                 except Exception as e:
                     self.logBrowser.append("""Ошибка установки флага пароля "not expired": {}""".format(str(e)))
+                    logger.warning("""Ошибка установки флага пароля "not expired": {}""".format(str(e)))
                 else:
-                    self.logBrowser.append("""Флаг установлен""")
+                    logger.info("""Флаг установлен""")
             if self.checkboxDisabled.isChecked():
                 try:
-                    self.logBrowser.append("""Установка флага пароля "disabled" """)
+                    logger.info("""Установка флага пароля "disabled" """)
                     pyad.adobject.ADObject.disable(user)
                 except Exception as e:
                     self.logBrowser.append("""Ошибка установки флага "disabled": {}""".format(str(e)))
+                    logger.warning("""Ошибка установки флага "disabled": {}""".format(str(e)))
                 else:
-                    self.logBrowser.append("""Флаг установлен""")
+                    logger.info("""Флаг установлен""")
             for cn in self.groups.keys():
                 if self.groups[cn][1] == True:
                     try:
-                        self.logBrowser.append("""Получение объекта группы: {}""".format(self.groups[cn][0]))
+                        logger.info("""Получение объекта группы: {}""".format(self.groups[cn][0]))
                         group = pyad.adgroup.ADGroup.from_dn(self.groups[cn][0])
                     except Exception as e:
                         self.logBrowser.append("""Ошибка": {}""".format(str(e)))
+                        logger.warning("""Ошибка": {}""".format(str(e)))
                     else:
-                        self.logBrowser.append("""Объект получен: {}""".format(str(group)))
+                        logger.info("""Объект получен: {}""".format(str(group)))
                         try:
-                            self.logBrowser.append("""Добавление учетной записи в группу""")
+                            logger.info("""Добавление учетной записи в группу""")
                             group.add_members([user])
                         except Exception as e:
                             self.logBrowser.append("""Ошибка": {}""".format(str(e)))
+                            logger.warning("""Ошибка": {}""".format(str(e)))
                         else:
-                            self.logBrowser.append("""Учетная запись добавлена в группу""")
-
-
+                            logger.info("""Учетная запись добавлена в группу""")
 
     def get_ad_tree(self):
         try:
