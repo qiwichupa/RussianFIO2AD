@@ -268,6 +268,10 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         except Exception as e:
             self.logBrowser.append("""Ошибка: {}({}: {}, {})\n """.format(str(e), displayName, password, str(container)))
             logger.warning("""Ошибка: {}({}: {}, {}) """.format(str(e), displayName, password, str(container)))
+            try:
+                user.delete()
+            except:
+                pass
         else:
             self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
             logger.info("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
