@@ -19,7 +19,7 @@ from ui_files import pyMain
 
 
 __appname__ = "RussianFIO2AD"
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 
 
 # get path of program dir.
@@ -40,7 +40,7 @@ except:
 logfile = os.path.join(appDataPath, __appname__ + ".log")
 
 # remove large logfile
-logFileSizeLimit = 8 # MB
+logFileSizeLimit = 1 # MB
 try:
     os.stat(logfile).st_size
     if os.stat(logfile).st_size > logFileSizeLimit*1024**2:
@@ -113,10 +113,11 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         self.initSettings()
 
     def initSettings(self):
+        """Инициализация настроек, вызов заполнения дерева AD и списка групп"""
         if not self.settings.value("templLogin"):
             self.settings.setValue("templLogin", "f_i1o1")
         if not self.settings.value("templPassword"):
-            self.settings.setValue("templPassword", "!@#$##$#")
+            self.settings.setValue("templPassword", "!@######$")
         if not self.settings.value("commonAttributes"):
             self.settings.setValue("commonAttributes", "description,company,department")
 
@@ -128,8 +129,8 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         self.passwordMask.setText(self.settings.value("templPassword"))
 
     def refreshADGroups(self):
+        """Обновление списка групп"""
         q = pyad.adquery.ADQuery()
-
         q.execute_query(
             attributes=["distinguishedName", "cn"],
             where_clause="objectClass = 'group'"
@@ -145,23 +146,26 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         self.refreshComboboxGroups()
 
     def comboboxGroupsActivated(self):
+        """Установка чекбокса в соответствии с тем - выбрано
+        добавление в эту группу создаваемой учетной записи или нет"""
         cn = self.comboboxGroups.currentText()
         self.checkboxAddToGroup.setChecked(self.groups[cn][1])
 
     def checkboxAddToGroupStateChanged(self):
+        """Добавляет или убирает группу в список групп, в которые
+        будет добавлена учетная запись, после чего обновляет self.comboboxGroups"""
         currentCN = self.comboboxGroups.currentText()
-
         if self.checkboxAddToGroup.isChecked():
             self.groups[currentCN][1] = True
         else:
             self.groups[currentCN][1] = False
 
         self.refreshComboboxGroups()
-
-
         self.comboboxGroups.setCurrentText(currentCN)
 
     def refreshComboboxGroups(self):
+        """Обновляет self.comboboxGroups с учетом статуса групп (выбрана или
+        не выбрана группа для добавления в нее учетной записи)"""
         self.comboboxGroups.clear()
         n = 0
         for cn in sorted(self.groups.keys(), key=str.lower):
@@ -177,7 +181,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
 
 
     def lineEditAttributeEmitted(self):
-        """Changes the value of an attribute variable. Marks a non-empty list item"""
+        """Изменяет значение переменной аттрибута, помечает не пустые элементы self.lineEditAttribute"""
         key = self.comboBoxAttributes.currentText()
         self.commonAttributes[key] = self.lineEditAttribute.text().strip()
         if self.lineEditAttribute.text().strip() != "":
@@ -188,12 +192,15 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         self.comboBoxAttributes.setItemIcon(self.comboBoxAttributes.currentIndex(), icon)
 
     def loginTemplateEmitted(self):
+        """Сохраняет в конфиг значение шаблона логина"""
         self.settings.setValue("templLogin", self.loginTemplate.text())
 
     def passwordMaskEmitted(self):
+        """Сохраняет в конфиг значение шаблона пароля"""
         self.settings.setValue("templPassword", self.passwordMask.text())
 
     def comboBoxAttributesActivated(self):
+        """Сохраняет значение аттрибута в словарь с индексом аттрибута"""
         key = self.comboBoxAttributes.currentText()
         self.lineEditAttribute.setText(self.commonAttributes[key])
 
@@ -201,6 +208,8 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         pass
 
     def loadAdToUI(self):
+        """Пытается получить дерево AD, в случае успеха отрисовывает
+        его в виджете и вызывает обновление списка групп"""
         try:
             adOUs = self.get_ad_tree()
         except Exception as e:
@@ -212,6 +221,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             self.refreshADGroups()
 
     def adTreeItemClicked(self):
+        """Создает self.adPathList из элементов DistinguishedName выбранной OU"""
         item = self.adTree.selectedItems()
         if item:
             self.buttonCreateAccounts.setEnabled(True)
@@ -228,6 +238,10 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             self.adTree.setHeaderLabel("/".join(self.adPathListReversed))
 
     def createADAccounts(self):
+        """Для каждого элемента списка логинов запускает функцию создания учетной записи.
+        Обратить внимание: container - объект OU, получается при помощи самописной функции,
+        потому что штатная (pyad.adcontainer.ADContainer.from_dn) выдает исключение,
+        если в Distinguished Name встречаются экранированные символы (баг pyad)"""
         self.buttonCreateAccounts.setDisabled(True)
         if self.adPathList:
             domain = "DC=" + ",DC=".join(self.domainList)
@@ -253,6 +267,12 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             self.buttonCreateAccounts.setEnabled(True)
 
     def add_user_to_ad(self, displayName, login, password, container):
+        """Создает учетную запись.
+        Пояснение: учетная запись может быть создана с ошибкой и вызвать этим исключение.
+        Типичный пример - попытка создания с указанием пароля, не соответствующего
+        политике паролей. Поэтому при возникновении исключения я пробую удалить возможно
+        созданную учетную запись (она НЕ будет создана при наличии в домене учетной записи  с таким же DN
+        или логином). """
         basicAttributes = {
                              "displayName": displayName,
                              "sAMAccountName": login,
@@ -265,21 +285,21 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                 optionalAttributes[key] = self.commonAttributes[key].strip()
 
         attributes = {**basicAttributes, **optionalAttributes}
+
         try:
             logger.info("""Создание: {} """.format(str(attributes)))
-            user = pyad.aduser.ADUser.create(displayName, container, password=password, optional_attributes=attributes)
+            user = pyad.aduser.ADUser.create(displayName, container, optional_attributes=attributes)
+            user.set_password(password=password)
         except Exception as e:
-            self.logBrowser.append("""Ошибка: {}({}: {}, {})\n """.format(str(e), displayName, password, str(container)))
-            logger.warning("""Ошибка: {}({}: {}, {}) """.format(str(e), displayName, password, str(container)))
-            """
+            self.logBrowser.append("""Ошибка: {}({}: {})\n """.format(str(e), displayName, login))
+            logger.warning("""Ошибка: {}({}: {}, {}) """.format(str(e), displayName, login, str(container)))
             try:
-                userforremove = pyad.aduser.ADUser.from_dn("CN={},{}".format(displayName, container.dn))
-                userforremove.delete()
-                self.logBrowser.append("Удален: CN={},{}".format(displayName, container.dn))
+                # не user.remove() потому что он падает, если OU содержит экранированные символы в DN
+                container.remove_child(user)
+                logger.info("Удален: CN={},{}".format(displayName, container.dn))
             except Exception as e:
-                self.logBrowser.append("Ошибка удаления: CN={},{}".format(displayName, container.dn))
-                pass
-            """
+                logger.info("Ошибка удаления: {} \nCN={},{}".format(str(e),displayName, container.dn))
+
         else:
             self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
             logger.info("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
@@ -322,6 +342,8 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                             logger.info("""Учетная запись добавлена в группу""")
 
     def get_ad_tree(self):
+        """Запрашивает из AD distinguishedName для всех UO,
+        возвращает список из списков элементов DN"""
         try:
             query = pyad.adquery.ADQuery()
             query.execute_query(
@@ -341,22 +363,11 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                     self.logBrowser.append("Domain: " + domain)
                 pathList = regex.subf("^OU=", "", row["distinguishedName"].split(",DC=")[0]).split(",OU=")
                 reversedPathList = list(reversed(pathList))
-                """
-                incorrectChars = ["\\"] # Некорректно обрабатываются при попытке обратиться к контейнеру в процессе создания учеток
-                if any(True for x in incorrectChars if x in "".join(reversedPathList)):
-                    pass
-                else:
-                    ous += [reversedPathList]
-                """
                 ous += [reversedPathList]
-            return ous
+            return sorted(ous)
 
     def tree_widget_list(self, show_list):
-        """
-        Creates a list for updating tree widget
-        :param show_list:
-        :return:
-        """
+        """Создает список для обновления дерева AD"""
         items = []
         for item_parts in show_list:
 
@@ -382,6 +393,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         return items
 
     def buttonPasteFClicked(self):
+        """Вставляет список фамилий (замещая или дополняя список виджета)"""
         clipboard = self.clip.text().splitlines()
 
         row = 0
@@ -393,6 +405,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             row += 1
 
     def buttonPasteIClicked(self):
+        """Вставляет список имен (замещая или дополняя список виджета)"""
         clipboard = self.clip.text().splitlines()
 
         row = 0
@@ -404,6 +417,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             row += 1
 
     def buttonPasteOClicked(self):
+        """Вставляет список отчеств (замещая или дополняя список виджета)"""
         clipboard = self.clip.text().splitlines()
 
         row = 0
@@ -415,7 +429,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             row += 1
 
     def buttonPasteFIOClicked(self):
-        """Fills FIO table from clipboard"""
+        """Вставляет список ФИО (обновляя список виджета)"""
         clipboard = self.clip.text().splitlines()
         self.tableNames.setRowCount(0)
 
@@ -433,6 +447,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                     self.tableNames.setItem(row, n-1, QtWidgets.QTableWidgetItem(t))
 
     def buttonGenLoginsClicked(self):
+        """Генерирует список логинов из списка ФИО"""
         self.tableLogins.setRowCount(0)
         for fioRow in range(0, self.tableNames.rowCount()):
             row = self.tableLogins.rowCount()
@@ -451,7 +466,9 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             self.tableLogins.setItem(row, 2, QtWidgets.QTableWidgetItem(password))
 
     def split_fio(self, fio):
-        """Returns splitted FIO if string can be splitted"""
+        """Возвращает разделенные ФИО,
+        разделение по табуляции (для вставки из таблицы) или пробелу.
+        Если ФИО не разделилось хотя бы на 2 части - вызывает исключение"""
         result = fio.strip().split("\t", maxsplit=3)
         if len(result) > 1:
             return result
@@ -464,6 +481,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         raise Exception
 
     def login_templating(self, f,i,o):
+        """Генерирует и возвращает логин из ФИО по шаблону"""
         fLat = utilities.translit(f)
         iLat = utilities.translit(i)
         oLat = utilities.translit(o)
@@ -477,7 +495,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         return login
 
     def password_templating(self):
-
+        """Генерирует и возвращает пароль по шаблону"""
         template = self.passwordMask.text()
         password = ""
 
@@ -496,7 +514,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         return password
 
     def copySelectedToClipboard(self):
-        """Sends selected rows to clipboard as tab-separated text"""
+        """Копирует список учетных записей в буфер обмена как текст, разделенный табуляцией"""
         self.tableLogins.selectAll()
         rows = utilities.get_selected_rows_from_qtablewidget(self.tableLogins)
         strings = []

@@ -186,7 +186,7 @@ def translit(string):
 
     return translit_string
 
-def get_container_from_dn(dn, rootcontainer=None):
+def get_container_from_dn(dn, rootcontainer=None, catchCN=False):
     if rootcontainer is None:
         rootcontainer = pyad.adcontainer.ADContainer.from_dn(pyad.adcontainer.ADContainer.default_domain)
 
@@ -199,14 +199,20 @@ def get_container_from_dn(dn, rootcontainer=None):
             return rootcontainer
 
     try:
-        children = rootcontainer.get_children(filter_=[pyad.adcontainer.ADContainer])
+        if catchCN:
+            children = rootcontainer.get_children()
+        else:
+            children = rootcontainer.get_children(filter_=[pyad.adcontainer.ADContainer])
     except:
         return None
 
     for c in children:
         if c.dn in dn:
             try:
-                container = get_container_from_dn(dn, rootcontainer=c)
+                if catchCN:
+                    container = get_container_from_dn(dn, rootcontainer=c, catchCN=True)
+                else:
+                    container = get_container_from_dn(dn, rootcontainer=c)
                 if container is not None:
                     return container
             except:
