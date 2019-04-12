@@ -249,8 +249,8 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             container = utilities.get_container_from_dn(organizationUnitDN)
 
 
-            self.logBrowser.append("""===================\nCreating in "{}"\n===================""".format("/".join(self.adPathListReversed)))
-            logger.info("""\n===================\nCreating in "{}"\n===================""".format("/".join(self.adPathListReversed)))
+            self.logBrowser.append("""===================\nСоздание в "{}"\n===================""".format("/".join(self.adPathListReversed)))
+            logger.info("""\n===================\nСоздание в "{}"\n===================""".format("/".join(self.adPathListReversed)))
             users = []
             for i in range(0, self.tableLogins.rowCount()):
 
@@ -291,7 +291,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             user = pyad.aduser.ADUser.create(displayName, container, optional_attributes=attributes)
             user.set_password(password=password)
         except Exception as e:
-            self.logBrowser.append("""Ошибка: {}({}: {})\n """.format(str(e), displayName, login))
+            self.logBrowser.append("""\nОшибка: {}({}: {})\n """.format(str(e), displayName, login))
             logger.warning("""Ошибка: {}({}: {}, {}) """.format(str(e), displayName, login, str(container)))
             try:
                 # не user.remove() потому что он падает, если OU содержит экранированные символы в DN
