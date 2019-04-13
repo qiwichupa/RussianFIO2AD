@@ -19,7 +19,7 @@ from ui_files import pyMain
 
 
 __appname__ = "RussianFIO2AD"
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 
 
 # get path of program dir.
@@ -130,20 +130,27 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
 
     def refreshADGroups(self):
         """Обновление списка групп"""
-        q = pyad.adquery.ADQuery()
-        q.execute_query(
-            attributes=["distinguishedName", "cn"],
-            where_clause="objectClass = 'group'"
-            )
-
-        self.groups = {}
-        for group in q.get_results():
-            if "\\" not in group["distinguishedName"]:
-                cn = group["cn"]
-                dn = group["distinguishedName"]
-                self.groups[cn] = [dn, False]
-
-        self.refreshComboboxGroups()
+        try:
+            q = pyad.adquery.ADQuery()
+            q.execute_query(
+                attributes=["distinguishedName", "cn"],
+                where_clause="objectClass = 'group'"
+                )
+        except Exception as e:
+            self.logBrowser.append("""Ошибка получения групп: {}""".format(str(e)))
+            logger.warning("""Ошибка получения групп: {}""".format(str(e)))
+            self.groups["Ошибка"] = [False, False]
+            self.comboboxGroups.setDisabled(True)
+            self.checkboxAddToGroup.setDisabled(True)
+        else:
+            self.groups = {}
+            for group in q.get_results():
+                if "\\" not in group["distinguishedName"]:
+                    cn = group["cn"]
+                    dn = group["distinguishedName"]
+                    self.groups[cn] = [dn, False]
+        finally:
+            self.refreshComboboxGroups()
 
     def comboboxGroupsActivated(self):
         """Установка чекбокса в соответствии с тем - выбрано
@@ -213,11 +220,12 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         try:
             adOUs = self.get_ad_tree()
         except Exception as e:
-            print(str(e))
+            self.logBrowser.append("""Ошибка получения дерева AD: {}""".format(str(e)))
+            logger.warning("""Ошибка получения дерева AD: {}""".format(str(e)))
         else:
             list = self.tree_widget_list(adOUs)
             self.adTree.insertTopLevelItems(0, list)
-
+        finally:
             self.refreshADGroups()
 
     def adTreeItemClicked(self):
@@ -327,6 +335,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                     try:
                         logger.info("""Получение объекта группы: {}""".format(self.groups[cn][0]))
                         group = pyad.adgroup.ADGroup.from_dn(self.groups[cn][0])
+                        print(str(group))
                     except Exception as e:
                         self.logBrowser.append("""Ошибка": {}""".format(str(e)))
                         logger.warning("""Ошибка": {}""".format(str(e)))
@@ -360,7 +369,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                 while domain == False:
                     self.domainList = row["distinguishedName"].split(",DC=", maxsplit=1)[1].split(",DC=")
                     domain = ".".join(self.domainList)
-                    self.logBrowser.append("Domain: " + domain)
+                    self.logBrowser.append("Подключено к домену: {}".format(domain))
                 pathList = regex.subf("^OU=", "", row["distinguishedName"].split(",DC=")[0]).split(",OU=")
                 reversedPathList = list(reversed(pathList))
                 ous += [reversedPathList]
