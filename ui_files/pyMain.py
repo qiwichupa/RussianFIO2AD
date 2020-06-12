@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './main.ui',
-# licensing of './main.ui' applies.
+# Form implementation generated from reading ui file 'main.ui',
+# licensing of 'main.ui' applies.
 #
-# Created: Tue Apr  9 20:26:29 2019
+# Created: Fri Jun 12 10:31:54 2020
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -222,6 +222,9 @@ class Ui_MainWindow(object):
         self.adPassword = QtWidgets.QLineEdit(self.frame_3)
         self.adPassword.setObjectName("adPassword")
         self.gridLayout_4.addWidget(self.adPassword, 1, 2, 1, 1)
+        self.adServer = QtWidgets.QLineEdit(self.frame_3)
+        self.adServer.setObjectName("adServer")
+        self.gridLayout_4.addWidget(self.adServer, 1, 0, 1, 1)
         self.buttonCreateAccounts = QtWidgets.QPushButton(self.frame_3)
         self.buttonCreateAccounts.setEnabled(False)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
@@ -230,10 +233,11 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.buttonCreateAccounts.sizePolicy().hasHeightForWidth())
         self.buttonCreateAccounts.setSizePolicy(sizePolicy)
         self.buttonCreateAccounts.setObjectName("buttonCreateAccounts")
-        self.gridLayout_4.addWidget(self.buttonCreateAccounts, 2, 0, 1, 3)
-        self.adServer = QtWidgets.QLineEdit(self.frame_3)
-        self.adServer.setObjectName("adServer")
-        self.gridLayout_4.addWidget(self.adServer, 1, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.buttonCreateAccounts, 2, 1, 1, 2)
+        self.buttonTestAccounts = QtWidgets.QPushButton(self.frame_3)
+        self.buttonTestAccounts.setEnabled(False)
+        self.buttonTestAccounts.setObjectName("buttonTestAccounts")
+        self.gridLayout_4.addWidget(self.buttonTestAccounts, 2, 0, 1, 1)
         self.gridAD.addWidget(self.frame_3, 2, 3, 1, 1)
         self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -294,7 +298,8 @@ class Ui_MainWindow(object):
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\">Homepage: </span><a href=\"https://github.com/qiwichupa/RussianFIO2AD\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; text-decoration: underline; color:#0000ff;\">https://github.com/qiwichupa/RussianFIO2AD</span></a><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\"><br /><br />Icons by </span><a href=\"https://www.freepik.com/\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; text-decoration: underline; color:#0000ff;\">Freepik</span></a><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\">, </span><a href=\"https://www.flaticon.com/authors/prettycons\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; text-decoration: underline; color:#0000ff;\">prettycons</span></a><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\"> <br />from </span><a href=\"https://www.flaticon.com/\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; text-decoration: underline; color:#0000ff;\">www.flaticon.com</span></a><span style=\" font-family:\'Sans Serif\'; font-size:9pt;\"> is licensed by </span><a href=\"http://creativecommons.org/licenses/by/3.0/\"><span style=\" font-family:\'Sans Serif\'; font-size:9pt; text-decoration: underline; color:#0000ff;\">CC 3.0 BY</span></a></p></body></html>", None, -1))
         self.adPassword.setPlaceholderText(QtWidgets.QApplication.translate("MainWindow", "password", None, -1))
-        self.buttonCreateAccounts.setText(QtWidgets.QApplication.translate("MainWindow", "Создать аккаунты в:", None, -1))
         self.adServer.setPlaceholderText(QtWidgets.QApplication.translate("MainWindow", "ad controller", None, -1))
+        self.buttonCreateAccounts.setText(QtWidgets.QApplication.translate("MainWindow", "Создать аккаунты в:", None, -1))
+        self.buttonTestAccounts.setText(QtWidgets.QApplication.translate("MainWindow", "Проверка на ошибки", None, -1))
 
 import icons_rc

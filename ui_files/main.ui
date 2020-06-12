@@ -450,7 +450,14 @@ p, li { white-space: pre-wrap; }
              </property>
             </widget>
            </item>
-           <item row="2" column="0" colspan="3">
+           <item row="1" column="0">
+            <widget class="QLineEdit" name="adServer">
+             <property name="placeholderText">
+              <string>ad controller</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1" colspan="2">
             <widget class="QPushButton" name="buttonCreateAccounts">
              <property name="enabled">
               <bool>false</bool>
@@ -466,10 +473,13 @@ p, li { white-space: pre-wrap; }
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QLineEdit" name="adServer">
-             <property name="placeholderText">
-              <string>ad controller</string>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="buttonTestAccounts">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Проверка на ошибки</string>
              </property>
             </widget>
            </item>

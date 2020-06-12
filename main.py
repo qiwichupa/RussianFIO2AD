@@ -19,7 +19,7 @@ from ui_files import pyMain
 
 
 __appname__ = "RussianFIO2AD"
-__version__ = "0.0.8"
+__version__ = "0.0.9rc"
 
 
 # get path of program dir.
@@ -101,12 +101,14 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         self.comboboxGroups.activated.connect(self.comboboxGroupsActivated)
 
         self.buttonConnectToAD.clicked.connect(self.buttonConnectToADClicked)
+        self.buttonTestAccounts.clicked.connect(self.testADAccounts)
         self.buttonCreateAccounts.clicked.connect(self.createADAccounts)
 
         self.buttonConnectToAD.hide()
         self.adServer.hide()
         self.adUser.hide()
         self.adPassword.hide()
+
 
         self.loadAdToUI()
 
@@ -186,7 +188,6 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             if self.groups[cn][1] == False:
                 self.comboboxGroups.addItem(cn)
 
-
     def lineEditAttributeEmitted(self):
         """Изменяет значение переменной аттрибута, помечает не пустые элементы self.lineEditAttribute"""
         key = self.comboBoxAttributes.currentText()
@@ -232,6 +233,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         """Создает self.adPathList из элементов DistinguishedName выбранной OU"""
         item = self.adTree.selectedItems()
         if item:
+            self.buttonTestAccounts.setEnabled(True)
             self.buttonCreateAccounts.setEnabled(True)
             selectedText = item[0].text(0)
 
@@ -250,6 +252,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
         Обратить внимание: container - объект OU, получается при помощи самописной функции,
         потому что штатная (pyad.adcontainer.ADContainer.from_dn) выдает исключение,
         если в Distinguished Name встречаются экранированные символы (баг pyad)"""
+        self.buttonTestAccounts.setDisabled(True)
         self.buttonCreateAccounts.setDisabled(True)
         if self.adPathList:
             domain = "DC=" + ",DC=".join(self.domainList)
@@ -272,7 +275,29 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                 else:
                     self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
 
+            self.buttonTestAccounts.setEnabled(True)
             self.buttonCreateAccounts.setEnabled(True)
+
+    def testADAccounts(self):
+        """ Для каждого элемента списка логинов проверяет наличие в AD логина или Common Name"""
+        if self.adPathList:
+            domain = "DC=" + ",DC=".join(self.domainList)
+            organizationUnitDN = "OU=" + ",OU=".join(self.adPathList) + "," + domain
+
+            self.logBrowser.clear()
+            self.logBrowser.append("""===================\nПроверка учетных записей\n===================""")
+            users = []
+            for i in range(0, self.tableLogins.rowCount()):
+                displayName = self.tableLogins.item(i, 0).text().strip()
+                login = self.tableLogins.item(i, 1).text().strip()
+                password = self.tableLogins.item(i, 2).text().strip()
+
+                if displayName != "" and login != "" and password != "":
+                    users += [{"displayName": displayName, "login": login, "password": password}]
+                    self.test_user_in_ad(i+1, displayName, login, password, organizationUnitDN, domain)
+                else:
+                    self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
+            self.logBrowser.append("""Проверка учетных записей завершена\n""")
 
     def add_user_to_ad(self, displayName, login, password, container):
         """Создает учетную запись.
@@ -299,7 +324,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             user = pyad.aduser.ADUser.create(displayName, container, optional_attributes=attributes)
             user.set_password(password=password)
         except Exception as e:
-            self.logBrowser.append("""\nОшибка: {}({}: {})\n """.format(str(e), displayName, login))
+            self.logBrowser.append("""\n<b>Ошибка</b>: {}({}: {})\n """.format(str(e), displayName, login))
             logger.warning("""Ошибка: {}({}: {}, {}) """.format(str(e), displayName, login, str(container)))
             try:
                 # не user.remove() потому что он падает, если OU содержит экранированные символы в DN
@@ -349,6 +374,49 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                             logger.warning("""Ошибка": {}""".format(str(e)))
                         else:
                             logger.info("""Учетная запись добавлена в группу""")
+
+    def test_user_in_ad(self, stringNum, displayName, login, password, organizationUnitDN, domain):
+        """Проверяет учетную запись на существование в AD логина (sAMAccountName) или distinguishedName. """
+
+        q = pyad.adquery.ADQuery()
+
+        # Поиск повторяющихся distinguishedName
+        q.execute_query(
+            attributes=["distinguishedName", "sAMAccountName"],
+            where_clause="displayName = '{}'".format(displayName),
+            base_dn=organizationUnitDN
+            )
+        dnames=[]
+        for row in q.get_results():
+            pathList = row["distinguishedName"].lstrip("CN={},OU=".format(displayName)).rstrip(",{}".format(domain)).split(",OU=")
+            path = "<b>/</b>".join(list(reversed(pathList)))
+            dnames.append(""""{}"  (Логин: "{}")""".format(path, row["sAMAccountName"]))
+
+        # Поиск повторяющихся логинов (sAMAccountName)
+        q.execute_query(
+            attributes=["distinguishedName", "sAMAccountName"],
+            where_clause="sAMAccountName = '{}'".format(login),
+            base_dn=domain
+            )
+        samnames=[]
+        for row in q.get_results():
+            pathList = row["distinguishedName"].lstrip("CN={},OU=".format(displayName)).rstrip(",{}".format(domain)).split(",OU=")
+            path = "<b>/</b>".join(list(reversed(pathList)))
+            samnames.append(""""{}"  (Логин: "{}")""".format(path, row["sAMAccountName"]))
+
+        # Запись лога ошибок
+        if len(dnames) > 0 or len(samnames) > 0:
+            self.logBrowser.append("#{}. <b>{}</b>".format(stringNum, displayName))
+            if len(dnames) > 0:
+                self.logBrowser.append("<u>Cовпадение distinguishedName в OU</u>:".format(displayName))
+                for dname in dnames:
+                    self.logBrowser.append(dname)
+            if len(samnames) > 0:
+                self.logBrowser.append("<u>Cовпадение логина (sAMAccountName) в OU</u>:".format(displayName))
+                for samname in samnames:
+                    self.logBrowser.append(samname)
+            self.logBrowser.append("")
+
 
     def get_ad_tree(self):
         """Запрашивает из AD distinguishedName для всех UO,
