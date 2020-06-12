@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'main.ui',
 # licensing of 'main.ui' applies.
 #
-# Created: Fri Jun 12 10:31:54 2020
+# Created: Fri Jun 12 20:25:59 2020
 #      by: pyside2-uic  running on PySide2 5.12.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(990, 517)
+        MainWindow.resize(1054, 517)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -55,9 +55,11 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.buttonPasteFIO = QtWidgets.QPushButton(self.frame_2)
+        self.buttonPasteFIO.setToolTip("")
         self.buttonPasteFIO.setObjectName("buttonPasteFIO")
         self.gridLayout_3.addWidget(self.buttonPasteFIO, 0, 0, 1, 1)
         self.buttonPasteF = QtWidgets.QPushButton(self.frame_2)
+        self.buttonPasteF.setToolTip("")
         self.buttonPasteF.setObjectName("buttonPasteF")
         self.gridLayout_3.addWidget(self.buttonPasteF, 0, 1, 1, 1)
         self.buttonPasteI = QtWidgets.QPushButton(self.frame_2)
@@ -264,7 +266,8 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.buttonConnectToAD, self.adServer)
         MainWindow.setTabOrder(self.adServer, self.adUser)
         MainWindow.setTabOrder(self.adUser, self.adPassword)
-        MainWindow.setTabOrder(self.adPassword, self.buttonCreateAccounts)
+        MainWindow.setTabOrder(self.adPassword, self.buttonTestAccounts)
+        MainWindow.setTabOrder(self.buttonTestAccounts, self.buttonCreateAccounts)
         MainWindow.setTabOrder(self.buttonCreateAccounts, self.adTree)
         MainWindow.setTabOrder(self.adTree, self.logBrowser)
 
@@ -300,6 +303,7 @@ class Ui_MainWindow(object):
         self.adPassword.setPlaceholderText(QtWidgets.QApplication.translate("MainWindow", "password", None, -1))
         self.adServer.setPlaceholderText(QtWidgets.QApplication.translate("MainWindow", "ad controller", None, -1))
         self.buttonCreateAccounts.setText(QtWidgets.QApplication.translate("MainWindow", "Создать аккаунты в:", None, -1))
-        self.buttonTestAccounts.setText(QtWidgets.QApplication.translate("MainWindow", "Проверка на ошибки", None, -1))
+        self.buttonTestAccounts.setToolTip(QtWidgets.QApplication.translate("MainWindow", "<html><head/><body><p>Предварительная проверка на повторы: <br/>sAMAccountName - глобально, <br/>distinguishedName - внутри выбранной OU рекурсивно</p></body></html>", None, -1))
+        self.buttonTestAccounts.setText(QtWidgets.QApplication.translate("MainWindow", "Проверка на дубли", None, -1))
 
 import icons_rc

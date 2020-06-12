@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>990</width>
+    <width>1054</width>
     <height>517</height>
    </rect>
   </property>
@@ -97,6 +97,9 @@
            </property>
            <item row="0" column="0">
             <widget class="QPushButton" name="buttonPasteFIO">
+             <property name="toolTip">
+              <string/>
+             </property>
              <property name="text">
               <string>Вставить ФИО</string>
              </property>
@@ -104,6 +107,9 @@
            </item>
            <item row="0" column="1">
             <widget class="QPushButton" name="buttonPasteF">
+             <property name="toolTip">
+              <string/>
+             </property>
              <property name="text">
               <string>Только Ф</string>
              </property>
@@ -478,8 +484,11 @@ p, li { white-space: pre-wrap; }
              <property name="enabled">
               <bool>false</bool>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Предварительная проверка на повторы: &lt;br/&gt;sAMAccountName - глобально, &lt;br/&gt;distinguishedName - внутри выбранной OU рекурсивно&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
-              <string>Проверка на ошибки</string>
+              <string>Проверка на дубли</string>
              </property>
             </widget>
            </item>
@@ -515,6 +524,7 @@ p, li { white-space: pre-wrap; }
   <tabstop>adServer</tabstop>
   <tabstop>adUser</tabstop>
   <tabstop>adPassword</tabstop>
+  <tabstop>buttonTestAccounts</tabstop>
   <tabstop>buttonCreateAccounts</tabstop>
   <tabstop>adTree</tabstop>
   <tabstop>logBrowser</tabstop>

@@ -19,7 +19,7 @@ from ui_files import pyMain
 
 
 __appname__ = "RussianFIO2AD"
-__version__ = "0.0.9rc"
+__version__ = "0.0.9rc2"
 
 
 # get path of program dir.
@@ -262,7 +262,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
 
             self.logBrowser.append("""===================\nСоздание в "{}"\n===================""".format("/".join(self.adPathListReversed)))
             logger.info("""\n===================\nСоздание в "{}"\n===================""".format("/".join(self.adPathListReversed)))
-            users = []
+            #users = []
             for i in range(0, self.tableLogins.rowCount()):
 
                 displayName = self.tableLogins.item(i, 0).text().strip()
@@ -270,7 +270,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                 password = self.tableLogins.item(i, 2).text().strip()
 
                 if displayName != "" and login != "" and password != "":
-                    users += [{"displayName": displayName, "login": login, "password": password}]
+                    #users += [{"displayName": displayName, "login": login, "password": password}]
                     self.add_user_to_ad(displayName, login, password, container)
                 else:
                     self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
@@ -286,14 +286,14 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
 
             self.logBrowser.clear()
             self.logBrowser.append("""===================\nПроверка учетных записей\n===================""")
-            users = []
+            #users = []
             for i in range(0, self.tableLogins.rowCount()):
                 displayName = self.tableLogins.item(i, 0).text().strip()
                 login = self.tableLogins.item(i, 1).text().strip()
                 password = self.tableLogins.item(i, 2).text().strip()
 
                 if displayName != "" and login != "" and password != "":
-                    users += [{"displayName": displayName, "login": login, "password": password}]
+                    #users += [{"displayName": displayName, "login": login, "password": password}]
                     self.test_user_in_ad(i+1, displayName, login, password, organizationUnitDN, domain)
                 else:
                     self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
@@ -386,11 +386,11 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             where_clause="displayName = '{}'".format(displayName),
             base_dn=organizationUnitDN
             )
-        dnames=[]
+        dnameDoublesList=[]
         for row in q.get_results():
-            pathList = row["distinguishedName"].lstrip("CN={},OU=".format(displayName)).rstrip(",{}".format(domain)).split(",OU=")
+            pathList = row["distinguishedName"].replace("CN={},OU=".format(displayName), "").replace(",{}".format(domain), "").split(",OU=")
             path = "<b>/</b>".join(list(reversed(pathList)))
-            dnames.append(""""{}"  (Логин: "{}")""".format(path, row["sAMAccountName"]))
+            dnameDoublesList.append(""""{}"  (Логин: "{}")""".format(path, row["sAMAccountName"]))
 
         # Поиск повторяющихся логинов (sAMAccountName)
         q.execute_query(
@@ -398,22 +398,22 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             where_clause="sAMAccountName = '{}'".format(login),
             base_dn=domain
             )
-        samnames=[]
+        samnameDoublesList=[]
         for row in q.get_results():
-            pathList = row["distinguishedName"].lstrip("CN={},OU=".format(displayName)).rstrip(",{}".format(domain)).split(",OU=")
+            pathList = row["distinguishedName"].replace("CN={},OU=".format(displayName), "").replace(",{}".format(domain), "").split(",OU=")
             path = "<b>/</b>".join(list(reversed(pathList)))
-            samnames.append(""""{}"  (Логин: "{}")""".format(path, row["sAMAccountName"]))
+            samnameDoublesList.append(""""{}"  (Логин: "{}")""".format(path, row["sAMAccountName"]))
 
         # Запись лога ошибок
-        if len(dnames) > 0 or len(samnames) > 0:
+        if len(dnameDoublesList) > 0 or len(samnameDoublesList) > 0:
             self.logBrowser.append("#{}. <b>{}</b>".format(stringNum, displayName))
-            if len(dnames) > 0:
+            if len(dnameDoublesList) > 0:
                 self.logBrowser.append("<u>Cовпадение distinguishedName в OU</u>:".format(displayName))
-                for dname in dnames:
+                for dname in dnameDoublesList:
                     self.logBrowser.append(dname)
-            if len(samnames) > 0:
+            if len(samnameDoublesList) > 0:
                 self.logBrowser.append("<u>Cовпадение логина (sAMAccountName) в OU</u>:".format(displayName))
-                for samname in samnames:
+                for samname in samnameDoublesList:
                     self.logBrowser.append(samname)
             self.logBrowser.append("")
 
