@@ -218,3 +218,6 @@ def get_container_from_dn(dn, rootcontainer=None, catchCN=False):
             except:
                 pass
 
+def set_bgcolor_qt_row(table, row, qcolor):
+    for column in range(0, table.columnCount()):
+        table.item(row, column).setBackground(qcolor)

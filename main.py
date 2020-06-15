@@ -19,7 +19,7 @@ from ui_files import pyMain
 
 
 __appname__ = "RussianFIO2AD"
-__version__ = "0.0.9rc2"
+__version__ = "0.0.9rc3"
 
 
 # get path of program dir.
@@ -280,23 +280,24 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
 
     def testADAccounts(self):
         """ Для каждого элемента списка логинов проверяет наличие в AD логина или Common Name"""
+        for row in range(0, self.tableLogins.rowCount()):
+            utilities.set_bgcolor_qt_row(self.tableLogins, row, QtGui.QColor(255, 255, 255))
+
         if self.adPathList:
             domain = "DC=" + ",DC=".join(self.domainList)
             organizationUnitDN = "OU=" + ",OU=".join(self.adPathList) + "," + domain
 
             self.logBrowser.clear()
             self.logBrowser.append("""===================\nПроверка учетных записей\n===================""")
-            #users = []
             for i in range(0, self.tableLogins.rowCount()):
                 displayName = self.tableLogins.item(i, 0).text().strip()
                 login = self.tableLogins.item(i, 1).text().strip()
                 password = self.tableLogins.item(i, 2).text().strip()
 
                 if displayName != "" and login != "" and password != "":
-                    #users += [{"displayName": displayName, "login": login, "password": password}]
-                    self.test_user_in_ad(i+1, displayName, login, password, organizationUnitDN, domain)
+                    self.test_user_in_ad(i+1, displayName, login, organizationUnitDN, domain)
                 else:
-                    self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
+                    self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login))
             self.logBrowser.append("""Проверка учетных записей завершена\n""")
 
     def add_user_to_ad(self, displayName, login, password, container):
@@ -375,9 +376,8 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
                         else:
                             logger.info("""Учетная запись добавлена в группу""")
 
-    def test_user_in_ad(self, stringNum, displayName, login, password, organizationUnitDN, domain):
+    def test_user_in_ad(self, stringNum, displayName, login,  organizationUnitDN, domain):
         """Проверяет учетную запись на существование в AD логина (sAMAccountName) или distinguishedName. """
-
         q = pyad.adquery.ADQuery()
 
         # Поиск повторяющихся distinguishedName
@@ -406,12 +406,15 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
 
         # Запись лога ошибок
         if len(dnameDoublesList) > 0 or len(samnameDoublesList) > 0:
+            utilities.set_bgcolor_qt_row(self.tableLogins, stringNum - 1, QtGui.QColor(255, 230, 230))
             self.logBrowser.append("#{}. <b>{}</b>".format(stringNum, displayName))
             if len(dnameDoublesList) > 0:
+                self.tableLogins.item(stringNum - 1, 0).setBackground(QtGui.QColor(255, 161, 137))
                 self.logBrowser.append("<u>Cовпадение distinguishedName в OU</u>:".format(displayName))
                 for dname in dnameDoublesList:
                     self.logBrowser.append(dname)
             if len(samnameDoublesList) > 0:
+                self.tableLogins.item(stringNum - 1, 1).setBackground(QtGui.QColor(255, 161, 137))
                 self.logBrowser.append("<u>Cовпадение логина (sAMAccountName) в OU</u>:".format(displayName))
                 for samname in samnameDoublesList:
                     self.logBrowser.append(samname)
