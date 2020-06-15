@@ -19,7 +19,7 @@ from ui_files import pyMain
 
 
 __appname__ = "RussianFIO2AD"
-__version__ = "0.0.9rc3"
+__version__ = "0.0.9rc4"
 
 
 # get path of program dir.
@@ -539,7 +539,7 @@ class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
             fio = "{} {} {}".format(f,i,o)
             password = self.password_templating()
 
-            login = self.login_templating(f,i,o)[:24]
+            login = self.login_templating(f,i,o)[:20]
 
             self.tableLogins.setItem(row, 0, QtWidgets.QTableWidgetItem(fio))
             self.tableLogins.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
