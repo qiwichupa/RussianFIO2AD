@@ -15,7 +15,7 @@ import sys
 
 import utilities
 
-from ui_files import pyMain
+from ui_files import main
 
 
 __appname__ = "RussianFIO2AD"
