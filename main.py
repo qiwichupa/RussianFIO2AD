@@ -14,6 +14,7 @@ import string
 import sys
 
 import utilities
+from app_dirs import AppDirs
 
 from ui_files import main
 
@@ -21,22 +22,9 @@ from ui_files import main
 __appname__ = "RussianFIO2AD"
 __version__ = "0.0.10"
 
-
-# get path of program dir.
-# sys._MEIPASS - variable of pyinstaller (one-dir package) with path to executable
-try:
-    sys._MEIPASS
-    appPath = sys._MEIPASS
-except:
-    appPath =  os.path.dirname(os.path.abspath(__file__))
-
-# set "data" in program dir as working directory
-appDataPath = os.path.join(appPath, "data")
-try:
-    os.makedirs(appDataPath, exist_ok=True)
-except:
-    appDataPath = appPath
-
+# set working directory
+appdirs = AppDirs(__appname__, isportable=True, portabledatadirname='data')
+appDataPath = appdirs.get_datadir()
 logfile = os.path.join(appDataPath, __appname__ + ".log")
 
 # remove large logfile
@@ -76,8 +64,8 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
         self.setupUi(self)
 
         self.setWindowTitle(__appname__ + " (v. " + __version__ + ")")
-
-        self.settings = QtCore.QSettings(os.path.join(appDataPath, "settings.ini"), QtCore.QSettings.IniFormat)
+        self.configfile=os.path.join(appDataPath, "settings.ini")
+        self.settings = QtCore.QSettings(self.configfile, QtCore.QSettings.IniFormat)
         self.settings.setIniCodec("UTF-8")
 
         self.clip = QtGui.QClipboard()
@@ -129,6 +117,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
 
         self.loginTemplate.setText(self.settings.value("templLogin"))
         self.passwordMask.setText(self.settings.value("templPassword"))
+        self.logBrowser.append("""Загружен конфиг: {cfg}""".format(cfg=self.configfile))
 
     def refreshADGroups(self):
         """Обновление списка групп"""
