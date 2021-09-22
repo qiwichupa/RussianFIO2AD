@@ -547,12 +547,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
         """Возвращает разделенные ФИО,
         разделение по табуляции (для вставки из таблицы) или пробелу.
         Если ФИО не разделилось хотя бы на 2 части - вызывает исключение"""
-        result = fio.strip().split("\t", maxsplit=3)
-        if len(result) > 1:
-            return result
-
-
-        result = fio.strip().split(" ", maxsplit=3)
+        result = fio.strip().split(None, maxsplit=2)
         if len(result) > 1:
             return result
 
