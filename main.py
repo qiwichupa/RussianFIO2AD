@@ -19,7 +19,7 @@ from ui_files import main
 
 
 __appname__ = "RussianFIO2AD"
-__version__ = "0.0.9"
+__version__ = "0.0.10"
 
 
 # get path of program dir.
