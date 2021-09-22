@@ -97,10 +97,9 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
         self.adUser.hide()
         self.adPassword.hide()
 
-
+        self.initSettings()
         self.loadAdToUI()
 
-        self.initSettings()
 
     def initSettings(self):
         """Инициализация настроек, вызов заполнения дерева AD и списка групп"""
@@ -110,10 +109,14 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
             self.settings.setValue("templPassword", "!@######$")
         if not self.settings.value("commonAttributes"):
             self.settings.setValue("commonAttributes", "description,company,department")
+        if not self.settings.value("favoriteGroups"):
+            self.settings.setValue("favoriteGroups", "")
 
         for key in self.settings.value("commonAttributes").split(","):
             self.commonAttributes[key] = ""
             self.comboBoxAttributes.addItems([key])
+
+        self.favoriteGroups = self.settings.value("favoriteGroups").split(",")
 
         self.loginTemplate.setText(self.settings.value("templLogin"))
         self.passwordMask.setText(self.settings.value("templPassword"))
@@ -166,6 +169,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
         не выбрана группа для добавления в нее учетной записи)"""
         self.comboboxGroups.clear()
         n = 0
+        # первыми в список - отмеченные
         for cn in sorted(self.groups.keys(), key=str.lower):
             if self.groups[cn][1] == True:
                 icon = QtGui.QIcon()
@@ -173,8 +177,13 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                 self.comboboxGroups.addItem(cn)
                 self.comboboxGroups.setItemIcon(n, icon)
                 n += 1
+        # вторыми в список - из списка избранного (favoriteGroups из файла настроек)
         for cn in sorted(self.groups.keys(), key=str.lower):
-            if self.groups[cn][1] == False:
+            if self.groups[cn][1] == False and cn in self.favoriteGroups:
+                self.comboboxGroups.addItem(cn)
+        # далее - все остальные
+        for cn in sorted(self.groups.keys(), key=str.lower):
+            if self.groups[cn][1] == False and cn not in self.favoriteGroups:
                 self.comboboxGroups.addItem(cn)
 
     def lineEditAttributeEmitted(self):
