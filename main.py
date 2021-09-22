@@ -66,7 +66,7 @@ except:
     pass
 
 
-class Main(QtWidgets.QMainWindow, pyMain.Ui_MainWindow):
+class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
 
     commonAttributes = {}
     groups = {}
