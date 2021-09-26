@@ -29,7 +29,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
         self.setupUi(self)
 
         self.setWindowTitle(__appname__ + " (v. " + __version__ + ")")
-        self.configfile=os.path.join(appDataPath, "settings.ini")
+        self.configfile = os.path.join(appDataPath, "settings.ini")
         self.settings = QtCore.QSettings(self.configfile, QtCore.QSettings.IniFormat)
         self.settings.setIniCodec("UTF-8")
 
@@ -64,7 +64,6 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
 
         self.initSettings()
         self.loadAdToUI()
-
 
     def initSettings(self):
         """Инициализация настроек, вызов заполнения дерева AD и списка групп"""
@@ -136,7 +135,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
         n = 0
         # первыми в список - отмеченные
         for cn in sorted(self.groups.keys(), key=str.lower):
-            if self.groups[cn][1] == True:
+            if self.groups[cn][1] is True:
                 icon = QtGui.QIcon()
                 icon.addPixmap(QtGui.QPixmap(":/icons/icons/edited.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
                 self.comboboxGroups.addItem(cn)
@@ -144,11 +143,11 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                 n += 1
         # вторыми в список - из списка избранного (favoriteGroups из файла настроек)
         for cn in sorted(self.groups.keys(), key=str.lower):
-            if self.groups[cn][1] == False and cn in self.favoriteGroups:
+            if self.groups[cn][1] is False and cn in self.favoriteGroups:
                 self.comboboxGroups.addItem(cn)
         # далее - все остальные
         for cn in sorted(self.groups.keys(), key=str.lower):
-            if self.groups[cn][1] == False and cn not in self.favoriteGroups:
+            if self.groups[cn][1] is False and cn not in self.favoriteGroups:
                 self.comboboxGroups.addItem(cn)
 
     def lineEditAttributeEmitted(self):
@@ -222,10 +221,9 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
             organizationUnitDN = "OU=" + ",OU=".join(self.adPathList) + "," + domain
             container = utilities.get_container_from_dn(organizationUnitDN)
 
-
             self.logBrowser.append("""===================\nСоздание в "{}"\n===================""".format("/".join(self.adPathListReversed)))
             logger.info("""\n===================\nСоздание в "{}"\n===================""".format("/".join(self.adPathListReversed)))
-            #users = []
+            # users = []
             for i in range(0, self.tableLogins.rowCount()):
 
                 displayName = self.tableLogins.item(i, 0).text().strip()
@@ -233,7 +231,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                 password = self.tableLogins.item(i, 2).text().strip()
 
                 if displayName != "" and login != "" and password != "":
-                    #users += [{"displayName": displayName, "login": login, "password": password}]
+                    # users += [{"displayName": displayName, "login": login, "password": password}]
                     self.add_user_to_ad(displayName, login, password, container)
                 else:
                     self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
@@ -260,7 +258,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                 if displayName != "" and login != "" and password != "":
                     self.test_user_in_ad(i+1, displayName, login, organizationUnitDN, domain)
                 else:
-                    self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login))
+                    self.logBrowser.append("\nПропуск: {} {} - пустое поле\n".format(displayName, login))
             self.logBrowser.append("""Проверка учетных записей завершена\n""")
 
     def add_user_to_ad(self, displayName, login, password, container):
@@ -295,7 +293,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                 container.remove_child(user)
                 logger.info("Удален: CN={},{}".format(displayName, container.dn))
             except Exception as e:
-                logger.info("Ошибка удаления: {} \nCN={},{}".format(str(e),displayName, container.dn))
+                logger.info("Ошибка удаления: {} \nCN={},{}".format(str(e), displayName, container.dn))
 
         else:
             self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
@@ -320,7 +318,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                 else:
                     logger.info("""Флаг установлен""")
             for cn in self.groups.keys():
-                if self.groups[cn][1] == True:
+                if self.groups[cn][1]:
                     try:
                         logger.info("""Получение объекта группы: {}""".format(self.groups[cn][0]))
                         group = pyad.adgroup.ADGroup.from_dn(self.groups[cn][0])
@@ -349,7 +347,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
             where_clause="displayName = '{}'".format(displayName),
             base_dn=organizationUnitDN
             )
-        dnameDoublesList=[]
+        dnameDoublesList = []
         for row in q.get_results():
             pathList = row["distinguishedName"].replace("CN={},OU=".format(displayName), "").replace(",{}".format(domain), "").split(",OU=")
             path = "<b>/</b>".join(list(reversed(pathList)))
@@ -361,7 +359,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
             where_clause="sAMAccountName = '{}'".format(login),
             base_dn=domain
             )
-        samnameDoublesList=[]
+        samnameDoublesList = []
         for row in q.get_results():
             pathList = row["distinguishedName"].replace("CN={},OU=".format(displayName), "").replace(",{}".format(domain), "").split(",OU=")
             path = "<b>/</b>".join(list(reversed(pathList)))
@@ -383,7 +381,6 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                     self.logBrowser.append(samname)
             self.logBrowser.append("")
 
-
     def get_ad_tree(self):
         """Запрашивает из AD distinguishedName для всех UO,
         возвращает список из списков элементов DN"""
@@ -400,7 +397,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
             ous = []
             for row in query.get_results():
 
-                while domain == False:
+                while domain is False:
                     self.domainList = row["distinguishedName"].split(",DC=", maxsplit=1)[1].split(",DC=")
                     domain = ".".join(self.domainList)
                     self.logBrowser.append("Подключено к домену: {}".format(domain))
@@ -499,10 +496,10 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
             f = self.tableNames.item(fioRow, 0).text()
             i = self.tableNames.item(fioRow, 1).text()
             o = self.tableNames.item(fioRow, 2).text()
-            fio = "{} {} {}".format(f,i,o)
+            fio = "{} {} {}".format(f, i, o)
             password = self.password_templating()
 
-            login = self.login_templating(f,i,o)[:20]
+            login = self.login_templating(f, i, o)[:20]
 
             self.tableLogins.setItem(row, 0, QtWidgets.QTableWidgetItem(fio))
             self.tableLogins.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
@@ -518,7 +515,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
 
         raise Exception
 
-    def login_templating(self, f,i,o):
+    def login_templating(self, f, i, o):
         """Генерирует и возвращает логин из ФИО по шаблону"""
         fLat = utilities.translit(f)
         iLat = utilities.translit(i)
@@ -564,9 +561,11 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
         result = "\n".join(strings)
         self.clip.setText(result)
 
+
 def unhandled_exception(exc_type, exc_value, exc_traceback):
     logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
     sys.exit(1)
+
 
 def main():
     sys.excepthook = unhandled_exception
