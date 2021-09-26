@@ -19,41 +19,6 @@ from app_dirs import AppDirs
 from ui_files import main
 
 
-__appname__ = "RussianFIO2AD"
-__version__ = "0.1.0"
-
-# set working directory
-appdirs = AppDirs(__appname__, isportable=True, portabledatadirname='data')
-appDataPath = appdirs.get_datadir()
-logfile = os.path.join(appDataPath, __appname__ + ".log")
-
-# remove large logfile
-logFileSizeLimit = 1 # MB
-try:
-    os.stat(logfile).st_size
-    if os.stat(logfile).st_size > logFileSizeLimit*1024**2:
-        removedLogFileSize = os.stat(logfile).st_size
-        try:
-            os.remove(logfile)
-        except:
-            pass
-except:
-    pass
-
-# logging
-logging.basicConfig(handlers=[logging.FileHandler(logfile, 'a', 'utf-8-sig')],
-                    format="%(asctime)-15s\t%(name)-10s\t%(levelname)-8s\t%(module)-10s\t%(funcName)-35s\t%(lineno)-6d\t%(message)s",
-                    level=logging.DEBUG)
-logger = logging.getLogger(name="main-gui")
-#sys.stdout = utilities.LoggerWriter(logger.warning)
-sys.stderr = utilities.LoggerWriter(logger.warning)
-try:
-    removedLogFileSize
-    logger.info("Previous logfile was removed by size limit (" + str(logFileSizeLimit) + "MB). Size was: " + str(removedLogFileSize) + " bytes.")
-except:
-    pass
-
-
 class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
 
     commonAttributes = {}
@@ -617,4 +582,38 @@ def main():
 
 
 if __name__ == "__main__":
+    __appname__ = "RussianFIO2AD"
+    __version__ = "0.1.0"
+
+    # set working directory
+    appdirs = AppDirs(__appname__, isportable=True, portabledatadirname='data')
+    appDataPath = appdirs.get_datadir()
+    logfile = os.path.join(appDataPath, __appname__ + ".log")
+
+    # remove large logfile
+    logFileSizeLimit = 1  # MB
+    try:
+        os.stat(logfile).st_size
+        if os.stat(logfile).st_size > logFileSizeLimit * 1024 ** 2:
+            removedLogFileSize = os.stat(logfile).st_size
+            try:
+                os.remove(logfile)
+            except:
+                pass
+    except:
+        pass
+
+    # logging
+    logging.basicConfig(handlers=[logging.FileHandler(logfile, 'a', 'utf-8-sig')],
+                        format="%(asctime)-15s\t%(name)-10s\t%(levelname)-8s\t%(module)-10s\t%(funcName)-35s\t%(lineno)-6d\t%(message)s",
+                        level=logging.DEBUG)
+    logger = logging.getLogger(name="main-gui")
+    # sys.stdout = utilities.LoggerWriter(logger.warning)
+    sys.stderr = utilities.LoggerWriter(logger.warning)
+    try:
+        removedLogFileSize
+        logger.info("Previous logfile was removed by size limit (" + str(logFileSizeLimit) + "MB). Size was: " + str(removedLogFileSize) + " bytes.")
+    except:
+        pass
+
     main()
