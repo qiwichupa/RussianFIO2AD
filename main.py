@@ -493,10 +493,26 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
             row = self.tableLogins.rowCount()
             self.tableLogins.insertRow(row)
 
-            f = self.tableNames.item(fioRow, 0).text()
-            i = self.tableNames.item(fioRow, 1).text()
-            o = self.tableNames.item(fioRow, 2).text()
-            fio = "{} {} {}".format(f, i, o)
+            fNone = iNone = oNone = False
+            f = i = o = ""
+
+            try:
+                f = self.tableNames.item(fioRow, 0).text().strip()
+                if len(f) == 0: fNone = True
+            except Exception as e:
+                fNone = True
+            try:
+                i = self.tableNames.item(fioRow, 1).text().strip()
+                if len(i) == 0: iNone = True
+            except Exception as e:
+                iNone = True
+            try:
+                o = self.tableNames.item(fioRow, 2).text().strip()
+                if len(o) == 0: oNone = True
+            except Exception as e:
+                oNone = True
+
+            fio = "{} {} {}".format(f, i, o).replace("  ", " ").strip()
             password = self.password_templating()
 
             login = self.login_templating(f, i, o)[:20]
@@ -504,6 +520,11 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
             self.tableLogins.setItem(row, 0, QtWidgets.QTableWidgetItem(fio))
             self.tableLogins.setItem(row, 1, QtWidgets.QTableWidgetItem(login))
             self.tableLogins.setItem(row, 2, QtWidgets.QTableWidgetItem(password))
+
+            if fNone or iNone or oNone: self.tableLogins.item(row, 0).setBackground(QtGui.QColor(255, 255, 155))
+            if fNone: self.logBrowser.append("Некритично: строка {} - отсутствует фамилия".format(row + 1))
+            if iNone: self.logBrowser.append("Некритично: строка {} - отсутствует имя".format(row + 1))
+            if oNone: self.logBrowser.append("Некритично: строка {} - отсутствует отчество".format(row + 1))
 
     def split_fio(self, fio):
         """Возвращает разделенные ФИО,
@@ -582,7 +603,7 @@ def main():
 
 if __name__ == "__main__":
     __appname__ = "RussianFIO2AD"
-    __version__ = "0.1.0"
+    __version__ = "0.1.1"
 
     # set working directory
     appdirs = AppDirs(__appname__, isportable=True, portabledatadirname='data')
