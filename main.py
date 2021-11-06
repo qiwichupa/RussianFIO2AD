@@ -12,6 +12,7 @@ import random
 import regex
 import string
 import sys
+import time
 
 import utilities
 from app_dirs import AppDirs
@@ -233,6 +234,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                 if displayName != "" and login != "" and password != "":
                     # users += [{"displayName": displayName, "login": login, "password": password}]
                     self.add_user_to_ad(displayName, login, password, container)
+                    time.sleep(0.2)
                 else:
                     self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
 
@@ -284,18 +286,30 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
         try:
             logger.info("""Создание: {} """.format(str(attributes)))
             user = pyad.aduser.ADUser.create(displayName, container, optional_attributes=attributes)
-            user.set_password(password=password)
         except Exception as e:
-            self.logBrowser.append("""\n<b>Ошибка</b>: {}({}: {})\n """.format(str(e), displayName, login))
-            logger.warning("""Ошибка: {}({}: {}, {}) """.format(str(e), displayName, login, str(container)))
+            self.logBrowser.append("""\n<b>Ошибка при создании учетной записи</b>: {}({}: {})\n """.format(str(e), displayName, login))
+            logger.warning("""Ошибка при создании учетной записи: {}({}: {}, {}) """.format(str(e), displayName, login, str(container)))
+            # удаление учетной записи
             try:
                 # не user.remove() потому что он падает, если OU содержит экранированные символы в DN
                 container.remove_child(user)
                 logger.info("Удален: CN={},{}".format(displayName, container.dn))
             except Exception as e:
-                logger.info("Ошибка удаления: {} \nCN={},{}".format(str(e), displayName, container.dn))
-
+                logger.warning("Ошибка удаления: {} \nCN={},{}".format(str(e), displayName, container.dn))
         else:
+            try:
+                logger.info("""Задание пароля для учетной записи: {} ({}) """.format(displayName, login))
+                user.set_password(password=password)
+            except Exception as e:
+                self.logBrowser.append("""\n<b>Ошибка при создании учетной записи (задании пароля)</b>: {}({}: {})\n """.format(str(e), displayName, login))
+                logger.warning("""Ошибка при создании учетной записи (задании пароля): {}({}: {}, {}) """.format(str(e), displayName, login, str(container)))
+                # удаление учетной записи
+                try:
+                    # не user.remove() потому что он падает, если OU содержит экранированные символы в DN
+                    container.remove_child(user)
+                    logger.info("Удален: CN={},{}".format(displayName, container.dn))
+                except Exception as e:
+                    logger.warning("Ошибка удаления: {} \nCN={},{}".format(str(e), displayName, container.dn))
             self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
             logger.info("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
 
@@ -603,7 +617,7 @@ def main():
 
 if __name__ == "__main__":
     __appname__ = "RussianFIO2AD"
-    __version__ = "0.1.1"
+    __version__ = "0.1.2-rc1"
 
     # set working directory
     appdirs = AppDirs(__appname__, isportable=True, portabledatadirname='data')
