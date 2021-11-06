@@ -232,9 +232,9 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                 password = self.tableLogins.item(i, 2).text().strip()
 
                 if displayName != "" and login != "" and password != "":
-                    # users += [{"displayName": displayName, "login": login, "password": password}]
                     self.add_user_to_ad(displayName, login, password, container)
                     time.sleep(0.2)
+                    QtCore.QCoreApplication.processEvents() # разморозка интерфейса без тредов
                 else:
                     self.logBrowser.append("\nПропуск: {} {} {} - пустое поле\n".format(displayName, login, password))
 
@@ -261,6 +261,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                     self.test_user_in_ad(i+1, displayName, login, organizationUnitDN, domain)
                 else:
                     self.logBrowser.append("\nПропуск: {} {} - пустое поле\n".format(displayName, login))
+                QtCore.QCoreApplication.processEvents()  # разморозка интерфейса без тредов
             self.logBrowser.append("""Проверка учетных записей завершена\n""")
 
     def add_user_to_ad(self, displayName, login, password, container):
@@ -617,7 +618,7 @@ def main():
 
 if __name__ == "__main__":
     __appname__ = "RussianFIO2AD"
-    __version__ = "0.1.2-rc1"
+    __version__ = "0.1.2"
 
     # set working directory
     appdirs = AppDirs(__appname__, isportable=True, portabledatadirname='data')
