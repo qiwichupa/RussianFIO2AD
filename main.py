@@ -305,9 +305,9 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
             while accountexistcheck is False:
                 try:
                     logger.info("""Проверка существования учетной записи: {} ({}) """.format(displayName, login))
-                    user.get_mandatory_attributes()
+                    user.get_attribute('displayName', always_return_list=True, source='LDAP')
                 except Exception as e:
-                    logger.info("""Ошибка проверки, повтор через {} сек...""".format(timeout))
+                    logger.info("""Ошибка проверки ({}), повтор через {} сек...""".format(str(e), timeout))
                     time.sleep(timeout)
                 else:
                     logger.info("""Проверка существования учетной записи: {} ({}) - успешно""".format(displayName, login))
