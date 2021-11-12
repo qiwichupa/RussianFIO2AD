@@ -304,20 +304,32 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
             timeout = 0.5
             while accountexistcheck is False:
                 try:
-                    logger.info("Проверка существования учетной записи ({}): запрос домена...".format(displayName))
-                    domain = user.get_domain()
+                    logger.info("""Проверка существования учетной записи: {} ({}) """.format(displayName, login))
+                    user.get_mandatory_attributes()
                 except Exception as e:
-                    logger.info("Ошибка проверки, повтор через {} сек...".format(timeout))
+                    logger.info("""Ошибка проверки, повтор через {} сек...""".format(timeout))
                     time.sleep(timeout)
                 else:
-                    logger.info("Проверка существования учетной записи ({}): успешно, домен {}".format(displayName, domain))
+                    logger.info("""Проверка существования учетной записи: {} ({}) - успешно""".format(displayName, login))
                     accountexistcheck = True
-            try:
-                logger.info("""Задание пароля для учетной записи: {} ({}) """.format(displayName, login))
-                user.set_password(password=password)
-            except Exception as e:
-                self.logBrowser.append("""\n<b>Ошибка при создании учетной записи (задании пароля)</b>: {}({}: {})\n """.format(str(e), displayName, login))
-                logger.warning("""Ошибка при создании учетной записи (задании пароля): {}({}: {}, {}) """.format(str(e), displayName, login, str(container)))
+
+            passwordisset = False
+            n = 1
+            nmax = 5
+            while passwordisset is False and n < nmax:
+                try:
+                    logger.info("""Задание пароля для учетной записи: {} ({}) """.format(displayName, login))
+                    user.set_password(password=password)
+                except Exception as e:
+                    n += 1
+                    logger.info("""Ошибка задания пароля, повтор #{} из {} через {} сек... Ошибка: {}""".format(n, nmax, timeout, str(e)))
+                    time.sleep(timeout)
+                else:
+                    logger.info("""Задание пароля для учетной записи: {} ({}) - успешно""".format(displayName, login))
+                    passwordisset = True
+            if not passwordisset:
+                self.logBrowser.append("""\n<b>Ошибка при создании учетной записи (задании пароля)</b>: ({}: {})\n """.format(displayName, login))
+                logger.warning("""Ошибка при создании учетной записи (задании пароля): ({}: {}, {}) """.format(displayName, login, str(container)))
                 # удаление учетной записи
                 try:
                     # не user.remove() потому что он падает, если OU содержит экранированные символы в DN
@@ -325,7 +337,8 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                     logger.info("Удален: CN={},{}".format(displayName, container.dn))
                 except Exception as e:
                     logger.warning("Ошибка удаления: {} \nCN={},{}".format(str(e), displayName, container.dn))
-            else:
+
+            if passwordisset:
                 self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
                 logger.info("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
 
@@ -633,7 +646,7 @@ def main():
 
 if __name__ == "__main__":
     __appname__ = "RussianFIO2AD"
-    __version__ = "0.1.3-beta"
+    __version__ = "0.1.3-beta2"
 
     # set working directory
     appdirs = AppDirs(__appname__, isportable=True, portabledatadirname='data')
