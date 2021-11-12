@@ -290,6 +290,7 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
         except Exception as e:
             self.logBrowser.append("""\n<b>Ошибка при создании учетной записи</b>: {}({}: {})\n """.format(str(e), displayName, login))
             logger.warning("""Ошибка при создании учетной записи: {}({}: {}, {}) """.format(str(e), displayName, login, str(container)))
+            """
             # удаление учетной записи
             try:
                 # не user.remove() потому что он падает, если OU содержит экранированные символы в DN
@@ -297,7 +298,20 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                 logger.info("Удален: CN={},{}".format(displayName, container.dn))
             except Exception as e:
                 logger.warning("Ошибка удаления: {} \nCN={},{}".format(str(e), displayName, container.dn))
+            """
         else:
+            accountexistcheck = False
+            timeout = 0.5
+            while accountexistcheck is False:
+                try:
+                    logger.info("Проверка существования учетной записи ({}): запрос домена...".format(displayName))
+                    domain = user.get_domain()
+                except Exception as e:
+                    logger.info("Ошибка проверки, повтор через {} сек...".format(timeout))
+                    time.sleep(timeout)
+                else:
+                    logger.info("Проверка существования учетной записи ({}): успешно, домен {}".format(displayName, domain))
+                    accountexistcheck = True
             try:
                 logger.info("""Задание пароля для учетной записи: {} ({}) """.format(displayName, login))
                 user.set_password(password=password)
@@ -311,46 +325,47 @@ class Main(QtWidgets.QMainWindow, main.Ui_MainWindow):
                     logger.info("Удален: CN={},{}".format(displayName, container.dn))
                 except Exception as e:
                     logger.warning("Ошибка удаления: {} \nCN={},{}".format(str(e), displayName, container.dn))
-            self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
-            logger.info("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
+            else:
+                self.logBrowser.append("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
+                logger.info("""Создана учетная запись "{}": {}, {} """.format(displayName, password, str(container)))
 
-            if self.checkboxNotExpiredPass.isChecked():
-                try:
-                    logger.info("""Установка флага пароля "not expired" """)
-                    user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
-                except Exception as e:
-                    self.logBrowser.append("""Ошибка установки флага пароля "not expired": {}""".format(str(e)))
-                    logger.warning("""Ошибка установки флага пароля "not expired": {}""".format(str(e)))
-                else:
-                    logger.info("""Флаг установлен""")
-            if self.checkboxDisabled.isChecked():
-                try:
-                    logger.info("""Установка флага пароля "disabled" """)
-                    pyad.adobject.ADObject.disable(user)
-                except Exception as e:
-                    self.logBrowser.append("""Ошибка установки флага "disabled": {}""".format(str(e)))
-                    logger.warning("""Ошибка установки флага "disabled": {}""".format(str(e)))
-                else:
-                    logger.info("""Флаг установлен""")
-            for cn in self.groups.keys():
-                if self.groups[cn][1]:
+                if self.checkboxNotExpiredPass.isChecked():
                     try:
-                        logger.info("""Получение объекта группы: {}""".format(self.groups[cn][0]))
-                        group = pyad.adgroup.ADGroup.from_dn(self.groups[cn][0])
-                        print(str(group))
+                        logger.info("""Установка флага пароля "not expired" """)
+                        user.set_user_account_control_setting("DONT_EXPIRE_PASSWD", True)
                     except Exception as e:
-                        self.logBrowser.append("""Ошибка": {}""".format(str(e)))
-                        logger.warning("""Ошибка": {}""".format(str(e)))
+                        self.logBrowser.append("""Ошибка установки флага пароля "not expired": {}""".format(str(e)))
+                        logger.warning("""Ошибка установки флага пароля "not expired": {}""".format(str(e)))
                     else:
-                        logger.info("""Объект получен: {}""".format(str(group)))
+                        logger.info("""Флаг установлен""")
+                if self.checkboxDisabled.isChecked():
+                    try:
+                        logger.info("""Установка флага пароля "disabled" """)
+                        pyad.adobject.ADObject.disable(user)
+                    except Exception as e:
+                        self.logBrowser.append("""Ошибка установки флага "disabled": {}""".format(str(e)))
+                        logger.warning("""Ошибка установки флага "disabled": {}""".format(str(e)))
+                    else:
+                        logger.info("""Флаг установлен""")
+                for cn in self.groups.keys():
+                    if self.groups[cn][1]:
                         try:
-                            logger.info("""Добавление учетной записи в группу""")
-                            group.add_members([user])
+                            logger.info("""Получение объекта группы: {}""".format(self.groups[cn][0]))
+                            group = pyad.adgroup.ADGroup.from_dn(self.groups[cn][0])
+                            print(str(group))
                         except Exception as e:
                             self.logBrowser.append("""Ошибка": {}""".format(str(e)))
                             logger.warning("""Ошибка": {}""".format(str(e)))
                         else:
-                            logger.info("""Учетная запись добавлена в группу""")
+                            logger.info("""Объект получен: {}""".format(str(group)))
+                            try:
+                                logger.info("""Добавление учетной записи в группу""")
+                                group.add_members([user])
+                            except Exception as e:
+                                self.logBrowser.append("""Ошибка": {}""".format(str(e)))
+                                logger.warning("""Ошибка": {}""".format(str(e)))
+                            else:
+                                logger.info("""Учетная запись добавлена в группу""")
 
     def test_user_in_ad(self, stringNum, displayName, login,  organizationUnitDN, domain):
         """Проверяет учетную запись на существование в AD логина (sAMAccountName) или distinguishedName. """
@@ -618,7 +633,7 @@ def main():
 
 if __name__ == "__main__":
     __appname__ = "RussianFIO2AD"
-    __version__ = "0.1.2"
+    __version__ = "0.1.3-beta"
 
     # set working directory
     appdirs = AppDirs(__appname__, isportable=True, portabledatadirname='data')
