@@ -646,7 +646,7 @@ def main():
 
 if __name__ == "__main__":
     __appname__ = "RussianFIO2AD"
-    __version__ = "0.1.3-beta2"
+    __version__ = "0.1.3"
 
     # set working directory
     appdirs = AppDirs(__appname__, isportable=True, portabledatadirname='data')
